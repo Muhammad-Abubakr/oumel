@@ -26,10 +26,31 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   // Scaffold State
   late ScaffoldMessengerState scaffoldState;
 
+  // blocs and cubits
+  late UserBloc userBloc;
+  late DatabaseUserCubit userCubit;
+
   @override
   void didChangeDependencies() {
     // updating scaffold context
     scaffoldState = ScaffoldMessenger.of(context);
+
+    // blocs and cubits initialization
+    userBloc = context.watch<UserBloc>();
+    userCubit = context.watch<DatabaseUserCubit>();
+
+    // intializing the controllers text
+    final user = userBloc.state.user!;
+
+    // display name
+    nameController.setText(user.displayName == null || user.displayName!.isEmpty
+        ? "Anonymous"
+        : user.displayName!);
+
+    // about
+    if (userCubit.state.user != null) {
+      aboutController.setText(userCubit.state.user!.about);
+    }
 
     super.didChangeDependencies();
   }
@@ -45,110 +66,110 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final UserBloc userBloc = context.watch<UserBloc>();
-    final DatabaseUserCubit userCubit = context.watch<DatabaseUserCubit>();
-
-    // intializing the controllers text
-    final user = userBloc.state.user!;
-
-    // display name
-    nameController.setText(user.displayName == null || user.displayName!.isEmpty
-        ? "Anonymous"
-        : user.displayName!);
-
-    aboutController.setText(userCubit.state.user!.about);
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Edit Profile'),
         actions: [
           TextButton.icon(
-            onPressed: () => _profileUpdate(userBloc, userCubit),
+            onPressed: () {
+              userCubit.state.user == null ? null : _profileUpdate(userBloc, userCubit);
+            },
             icon: const Icon(Icons.save),
             label: const Text('save'),
+            style: TextButton.styleFrom(
+                foregroundColor: userCubit.state.user == null
+                    ? Colors.grey
+                    : Theme.of(context).primaryColor),
           )
         ],
       ),
-      body: SizedBox(
-        height: 1.0.sh,
-        width: 1.0.sw,
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: EdgeInsets.only(
-              left: 0.1.sw,
-              right: 0.1.sw,
-              top: 0.04.sh,
-              bottom: 0.1.sh,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                /* User pfp */
-                GestureDetector(
-                  // Handler for picking image
-                  onTap: () => _pickImage(),
-
-                  // Ternary Operation: image present ? show : show placeholder icon;
-                  child: Stack(
-                    alignment: Alignment.bottomRight,
+      body: userCubit.state.user == null
+          ? Center(
+              child: CircularProgressIndicator(
+                color: Theme.of(context).colorScheme.primary,
+                backgroundColor: Theme.of(context).colorScheme.onPrimary,
+              ),
+            )
+          : SizedBox(
+              height: 1.0.sh,
+              width: 1.0.sw,
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: EdgeInsets.only(
+                    left: 0.1.sw,
+                    right: 0.1.sw,
+                    top: 0.04.sh,
+                    bottom: 0.1.sh,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      userBloc.state.user!.photoURL == null
-                          ? CircleAvatar(
-                              radius: 164.r,
-                              child: Icon(Icons.person, size: 164.r),
-                            )
-                          : CircleAvatar(
+                      /* User pfp */
+                      GestureDetector(
+                        // Handler for picking image
+                        onTap: () => _pickImage(),
+
+                        // Ternary Operation: image present ? show : show placeholder icon;
+                        child: Stack(
+                          alignment: Alignment.bottomRight,
+                          children: [
+                            userBloc.state.user!.photoURL == null
+                                ? CircleAvatar(
+                                    radius: 164.r,
+                                    child: Icon(Icons.person, size: 164.r),
+                                  )
+                                : CircleAvatar(
+                                    backgroundColor: Theme.of(context).colorScheme.primary,
+                                    radius: 204.r,
+                                    child: CircleAvatar(
+                                      radius: 196.r,
+                                      // If the photo url of the user in not null ? show the email pfp
+                                      backgroundImage:
+                                          Image.network(userBloc.state.user!.photoURL!).image,
+                                    ),
+                                  ),
+                            CircleAvatar(
+                              radius: 48.r,
                               backgroundColor: Theme.of(context).colorScheme.primary,
-                              radius: 204.r,
-                              child: CircleAvatar(
-                                radius: 196.r,
-                                // If the photo url of the user in not null ? show the email pfp
-                                backgroundImage:
-                                    Image.network(userBloc.state.user!.photoURL!).image,
-                              ),
+                              foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                              child: Icon(Icons.edit, size: 48.r),
                             ),
-                      CircleAvatar(
-                        radius: 48.r,
-                        backgroundColor: Theme.of(context).colorScheme.primary,
-                        foregroundColor: Theme.of(context).colorScheme.onPrimary,
-                        child: Icon(Icons.edit, size: 48.r),
+                          ],
+                        ),
+                      ),
+                      /* Spacing */
+                      SizedBox(height: 96.h),
+
+                      /* User name */
+                      TextField(
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          label: Text('Display Name'),
+                          floatingLabelAlignment: FloatingLabelAlignment.center,
+                        ),
+                        textAlign: TextAlign.center,
+                        controller: nameController,
+                      ),
+                      /* Spacing */
+                      SizedBox(height: 96.h),
+
+                      /* Description */
+                      TextField(
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          label: Text('About Me'),
+                          floatingLabelAlignment: FloatingLabelAlignment.center,
+                        ),
+                        minLines: 8,
+                        maxLines: 12,
+                        textAlign: TextAlign.center,
+                        controller: aboutController,
                       ),
                     ],
                   ),
                 ),
-                /* Spacing */
-                SizedBox(height: 96.h),
-
-                /* User name */
-                TextField(
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    label: Text('Display Name'),
-                    floatingLabelAlignment: FloatingLabelAlignment.center,
-                  ),
-                  textAlign: TextAlign.center,
-                  controller: nameController,
-                ),
-                /* Spacing */
-                SizedBox(height: 96.h),
-
-                /* Description */
-                TextField(
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    label: Text('About Me'),
-                    floatingLabelAlignment: FloatingLabelAlignment.center,
-                  ),
-                  minLines: 8,
-                  maxLines: 12,
-                  textAlign: TextAlign.center,
-                  controller: aboutController,
-                ),
-              ],
+              ),
             ),
-          ),
-        ),
-      ),
     );
   }
 

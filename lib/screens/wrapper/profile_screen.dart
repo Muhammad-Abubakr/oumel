@@ -83,9 +83,11 @@ class ProfileScreen extends StatelessWidget {
 
                     /* Edit Profile Button */
                     ElevatedButton(
-                      onPressed: () => Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => const EditProfileScreen(),
-                      )),
+                      onPressed: () {
+                        Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => const EditProfileScreen(),
+                        ));
+                      },
                       style: ButtonStyle(
                         fixedSize: MaterialStatePropertyAll(Size.fromWidth(0.8.sw)),
                         shape: MaterialStatePropertyAll(
@@ -102,7 +104,6 @@ class ProfileScreen extends StatelessWidget {
                       ),
                       child: const Text("Edit Profile"),
                     ),
-
                     /* User Details About Purchases and Sales */
                     // TODO: Wrap each of following with their respective Bloc and listen for changes
 

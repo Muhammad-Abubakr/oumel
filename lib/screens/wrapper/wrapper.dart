@@ -41,8 +41,6 @@ class _WrapperState extends State<Wrapper> {
   void didChangeDependencies() {
     /* Initializations */
     userCubit = context.watch<DatabaseUserCubit>();
-    /* Initializations Area */
-    userCubit.initialize();
 
     super.didChangeDependencies();
   }

@@ -40,9 +40,19 @@ class _WrapperState extends State<Wrapper> {
   @override
   void didChangeDependencies() {
     /* Initializations */
-    userCubit = context.read<DatabaseUserCubit>();
+    userCubit = context.watch<DatabaseUserCubit>();
+    /* Initializations Area */
+    userCubit.initialize();
 
     super.didChangeDependencies();
+  }
+
+  @override
+  void dispose() {
+    /* Disposition */
+    userCubit.dispose();
+
+    super.dispose();
   }
 
   @override
@@ -96,8 +106,6 @@ class _WrapperState extends State<Wrapper> {
             break;
 
           case UserStates.signedOut:
-            /* Disposition */
-            userCubit.dispose();
 
             // clear the progress indicator
             Navigator.of(context).pop();

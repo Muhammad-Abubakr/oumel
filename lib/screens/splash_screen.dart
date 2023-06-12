@@ -4,7 +4,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:oumel/screens/auth/authentication.dart';
 import 'package:oumel/screens/wrapper/wrapper.dart';
 
-import '../blocs/database_user/database_user_cubit.dart';
 import '../blocs/user/user_bloc.dart';
 
 class SplashScreen extends StatelessWidget {
@@ -15,16 +14,11 @@ class SplashScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final userCubit = context.read<DatabaseUserCubit>();
-
     return BlocListener<UserBloc, UserState>(
       listener: (context, state) {
-        Future.delayed(const Duration(seconds: 2)).then((_) {
+        Future.delayed(const Duration(seconds: 4)).then((_) {
           switch (state.status) {
             case UserStates.signedIn:
-              /* Initializations Area */
-              userCubit.initialize();
-
               Navigator.of(context).popAndPushNamed(Wrapper.routeName);
               break;
             case UserStates.signedOut:

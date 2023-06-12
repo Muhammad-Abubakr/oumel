@@ -74,7 +74,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               // show snackbar with the error
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                 content: Text(
-                  state.exception!.message!,
+                  '${state.exception!.message}',
                   textAlign: TextAlign.center,
                 ),
               ));

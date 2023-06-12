@@ -4,6 +4,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/foundation.dart';
 
 import '../../models/user.dart' as model;
 
@@ -14,7 +15,7 @@ class DatabaseUserCubit extends Cubit<DatabaseUserState> {
   final DatabaseReference _users = FirebaseDatabase.instance.ref('users');
 
   // Streams
-  late final StreamSubscription _streamSubscription;
+  late StreamSubscription _streamSubscription;
 
   /* Constructor */
   DatabaseUserCubit() : super(const DatabaseUserInitial(user: null));
@@ -31,7 +32,8 @@ class DatabaseUserCubit extends Cubit<DatabaseUserState> {
     _streamSubscription = FirebaseAuth.instance.userChanges().listen((user) async {
       if (user != null && !user.isAnonymous) {
         /* get the user from the real time database */
-        final DataSnapshot me = await _users.child(user.uid).get();
+        final DatabaseReference meRef = _users.child(user.uid);
+        final DataSnapshot me = await meRef.get();
 
         /* Parse the user */
         final model.User databaseUser = model.User.fromJson(me.value.toString());
@@ -48,11 +50,10 @@ class DatabaseUserCubit extends Cubit<DatabaseUserState> {
           uid: user.uid,
         );
 
-        // get the user ref
-        final userRef = _users.child(user.uid);
+        debugPrint(updatedUser.toString());
 
         // Update the User in the database.
-        await userRef.set(updatedUser.toJson());
+        await meRef.set(updatedUser.toJson());
 
         // once we have our user, update the cubit
         emit(DatabaseUserUpdate(user: updatedUser));

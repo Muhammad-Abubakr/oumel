@@ -18,7 +18,7 @@ class AuthenticationScreen extends StatelessWidget {
     return BlocConsumer<UserBloc, UserState>(
       listener: (context, state) {
         switch (state.status) {
-          case UserStates.signedIn:
+          case UserStates.anonLogin:
 
             // popping the loading indicator
             Navigator.of(context)

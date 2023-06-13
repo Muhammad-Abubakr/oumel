@@ -44,6 +44,8 @@ dependencies:
   firebase_storage: ^11.2.2
   image_picker: ^0.8.8
   pinput: ^2.2.31
+  video_player: ^2.6.1
+  cached_network_image: ^3.2.3
 
 dev_dependencies:
   flutter_test:
@@ -71,6 +73,7 @@ flutter:
   assets:
     - assets/oumel.png
     - assets/logo2.png
+    - assets/selling.jpg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

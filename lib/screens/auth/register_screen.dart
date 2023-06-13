@@ -4,10 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:oumel/blocs/database_user/database_user_cubit.dart';
 import 'package:oumel/blocs/phone_verification/phone_verification_cubit.dart';
+import 'package:oumel/blocs/userbase/userbase_cubit.dart';
 import 'package:oumel/screens/auth/otp_screen.dart';
 
 import '../../blocs/user/user_bloc.dart';
+import '../wrapper/wrapper.dart';
+import 'authentication.dart';
 
 class RegisterScreen extends StatefulWidget {
   // route name
@@ -58,12 +62,32 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     final userBloc = context.read<UserBloc>();
+    final userCubit = context.read<DatabaseUserCubit>();
 
     /* Used for padding for fields */
     final isLandscape = MediaQuery.of(context).orientation == Orientation.landscape;
 
     return MultiBlocListener(
       listeners: [
+        /* User Bloc Listener */
+        BlocListener<UserBloc, UserState>(listener: (context, state) {
+          switch (state.status) {
+            case UserStates.initialized:
+              userCubit.createUser(dob!);
+
+              // popping the loading indicator
+              Navigator.of(context)
+                  .popUntil(ModalRoute.withName(AuthenticationScreen.routeName));
+
+              // pushing the Wrapper on Stack
+              Navigator.of(context).pushReplacementNamed(Wrapper.routeName);
+
+              break;
+            default:
+          }
+        }),
+
+        /* Phone Verification Listener */
         BlocListener<PhoneVerificationCubit, PhoneVerificationState>(
             listener: (context, state) {
           switch (state.status) {
@@ -87,7 +111,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
               // pop the otp screen
               Navigator.of(context).pop();
 
-              // // TODO: start process to login with email and password
               registerUser(userBloc);
               break;
             case VerificationStatus.otpSent:
@@ -297,16 +320,30 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ), // Register Button
                 SizedBox(height: 164.h),
                 ElevatedButton(
-                  // onPressed: () => registerHandler(userBloc),
                   onPressed: () {
-                    /* Check if we have any phone number */
-                    if (validator(userBloc)) {
-                      /* Call the Cubit method to verify phone number */
-                      context.read<PhoneVerificationCubit>().phoneAutoVerification(
-                            _phoneNumberController.text,
-                          );
-                    } // else show the error
-                    else {}
+                    /* Check if the phone number already exists */
+                    bool phoneExists = context
+                            .read<UserbaseCubit>()
+                            .phoneNumberExists(_phoneNumberController.text.trim()) >
+                        -1;
+
+                    if (phoneExists) {
+                      scaffoldState.showSnackBar(
+                        const SnackBar(
+                          content: Text(
+                            'This Phone number is already associated with a user account',
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      );
+                    } else {
+                      if (validator(userBloc)) {
+                        /* Call the Cubit method to verify phone number */
+                        context.read<PhoneVerificationCubit>().phoneAutoVerification(
+                              _phoneNumberController.text,
+                            );
+                      }
+                    }
                   },
                   style: ElevatedButton.styleFrom(
                     elevation: 4,
@@ -407,7 +444,7 @@ two sources: Camera or Gallery */
     // Check if Image Source is Null, Cancel the Operation
     if (_validateImageSource()) {
       /* Else Pick the Image File */
-      _imagePicker.pickImage(source: _imageSource!).then((value) {
+      _imagePicker.pickImage(source: _imageSource!, imageQuality: 80).then((value) {
         if (value != null) {
           /* Update the xFile */
           setState(() {

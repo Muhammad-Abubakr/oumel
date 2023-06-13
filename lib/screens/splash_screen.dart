@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:oumel/blocs/userbase/userbase_cubit.dart';
 import 'package:oumel/screens/auth/authentication.dart';
 import 'package:oumel/screens/wrapper/wrapper.dart';
 
-import '../blocs/database_user/database_user_cubit.dart';
 import '../blocs/user/user_bloc.dart';
 
 class SplashScreen extends StatelessWidget {
@@ -15,13 +15,12 @@ class SplashScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    /* Initializations Area */
-    final userCubit = context.watch<DatabaseUserCubit>();
-    userCubit.initialize();
+    /* Do the initializations */
+    context.read<UserbaseCubit>().initialize();
 
     return BlocListener<UserBloc, UserState>(
       listener: (context, state) {
-        Future.delayed(const Duration(seconds: 2)).then((_) {
+        Future.delayed(const Duration(seconds: 3)).then((_) {
           switch (state.status) {
             case UserStates.signedIn:
               Navigator.of(context).popAndPushNamed(Wrapper.routeName);

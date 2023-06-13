@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:oumel/blocs/database_user/database_user_cubit.dart';
 import 'package:pinput/pinput.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 import '../blocs/user/user_bloc.dart';
 
@@ -29,6 +30,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   // blocs and cubits
   late UserBloc userBloc;
   late DatabaseUserCubit userCubit;
+
+  @override
+  void initState() {
+    /* Initialize the Database User cubit */
+    // at this time our user would be fully updated
+    // as well as registered
+    context.read<DatabaseUserCubit>().initialize();
+
+    super.initState();
+  }
 
   @override
   void didChangeDependencies() {
@@ -124,8 +135,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     child: CircleAvatar(
                                       radius: 196.r,
                                       // If the photo url of the user in not null ? show the email pfp
-                                      backgroundImage:
-                                          Image.network(userBloc.state.user!.photoURL!).image,
+                                      backgroundImage: CachedNetworkImageProvider(
+                                        userBloc.state.user!.photoURL!,
+                                      ),
                                     ),
                                   ),
                             CircleAvatar(

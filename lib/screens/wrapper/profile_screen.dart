@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -54,7 +55,12 @@ class ProfileScreen extends StatelessWidget {
                         ? CircleAvatar(
                             radius: 164.r,
                             child: userBloc.state.user!.photoURL != null
-                                ? Image.network('${userBloc.state.user!.photoURL}')
+                                ? CachedNetworkImage(
+                                    imageUrl: '${userBloc.state.user!.photoURL}',
+                                    placeholder: (context, url) => const Center(
+                                      child: CircularProgressIndicator(),
+                                    ),
+                                  )
                                 : Icon(Icons.person, size: 164.r),
                           )
                         : CircleAvatar(

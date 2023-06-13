@@ -67,7 +67,23 @@ class UserBloc extends Bloc<UserEvent, UserState> {
         user: event.user,
         state: UserStates.signedOut,
       ));
-      // otherwise the user must have signed in
+      // if the user is registering and signed in one time but it's updated
+      // with other details like profile pic, display name and photoUrl
+    } else if (event.user?.uid == state.user?.uid &&
+        (state.user?.photoURL == null && event.user?.photoURL != null)) {
+      emit(UserUpdate(
+        user: event.user,
+        state: UserStates.initialized,
+      ));
+
+      // if user is anonymous and signing in
+    } else if (event.user!.isAnonymous) {
+      emit(UserUpdate(
+        user: event.user,
+        state: UserStates.anonLogin,
+      ));
+
+      // if user is not anonymous and singing in
     } else {
       emit(UserUpdate(
         user: event.user,
@@ -156,37 +172,18 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       User? user = await _auth.registerWithEmailAndPassword(event.email, event.password);
 
       if (user != null) {
-        emit(UserUpdate(user: state.user, state: UserStates.registered));
-        // sign out the user
-        add(UserSignOut());
+        /* Storing the image */
 
-        /* Update Display Name and Phone Number */
+        /* Update User name and phone number */
         await user.updateDisplayName('${event.firstName} ${event.lastName}');
         await user.updatePhoneNumber(event.phoneAuthCredential);
 
-        /* Storing the image */
-        // Getting the reference
+        // Getting the reference to Image and update
         final imageRef = storage.child('pfps/${user.uid}');
-
         await imageRef.putFile(File(event.xFile.path));
-
         await user.updatePhotoURL(await imageRef.getDownloadURL());
 
-        /* Add the User to users collection in realtime database */
-        final usersRef = database.child('users/${user.uid}');
-
-        /* Create user at the usersRef */
-        await usersRef.set(
-          model.User(
-            fName: event.firstName,
-            lName: event.lastName,
-            email: event.email,
-            dob: event.dob,
-            phoneNumber: event.phoneNumber,
-            photoURL: await imageRef.getDownloadURL(),
-            uid: user.uid,
-          ).toJson(),
-        );
+        emit(UserUpdate(user: user, state: UserStates.registered));
       }
 
       // Incase of error while registering on Signing in
@@ -285,7 +282,6 @@ class UserBloc extends Bloc<UserEvent, UserState> {
 
       /* Updating reference to user profile pic in the users collection in database */
       // getting the reference
-      // // TODONE: REMOVE ANONYMOUS CHECK WHEN LOGGING IN WITH USER
       final userRef = database.child('users/${state.user?.uid}');
 
       // parsing and updating the user modal

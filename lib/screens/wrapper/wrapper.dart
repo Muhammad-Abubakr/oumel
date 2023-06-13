@@ -8,7 +8,6 @@ import 'package:oumel/screens/wrapper/notifications_screen.dart';
 import 'package:oumel/screens/wrapper/profile_screen.dart';
 import 'package:oumel/screens/wrapper/sell_screen.dart';
 
-import '../../blocs/database_user/database_user_cubit.dart';
 import '../../blocs/user/user_bloc.dart';
 
 class Wrapper extends StatefulWidget {
@@ -22,9 +21,6 @@ class Wrapper extends StatefulWidget {
 }
 
 class _WrapperState extends State<Wrapper> {
-  // blocs and cubits
-  late DatabaseUserCubit userCubit;
-
   // Current Screen Index
   int currentScreen = 0;
 
@@ -36,22 +32,6 @@ class _WrapperState extends State<Wrapper> {
     SellScreen(),
     ProfileScreen(),
   ];
-
-  @override
-  void didChangeDependencies() {
-    /* Initializations */
-    userCubit = context.watch<DatabaseUserCubit>();
-
-    super.didChangeDependencies();
-  }
-
-  @override
-  void dispose() {
-    /* Disposition */
-    userCubit.dispose();
-
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {

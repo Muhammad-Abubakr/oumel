@@ -34,7 +34,9 @@ class _LoginScreenState extends State<LoginScreen> {
             // pushing the Wrapper on Stack
             Navigator.of(context).pushReplacementNamed(Wrapper.routeName);
             break;
-
+          case UserStates.error:
+            Navigator.of(context).pop();
+            break;
           default:
             break;
         }

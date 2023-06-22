@@ -34,10 +34,9 @@ class AuthenticationScreen extends StatelessWidget {
 
             // Then show New
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content: Text('${state.error?.message}'),
-              action: SnackBarAction(
-                label: 'Dismiss',
-                onPressed: () => ScaffoldMessenger.of(context).removeCurrentSnackBar(),
+              content: Text(
+                '${state.error?.message}',
+                textAlign: TextAlign.center,
               ),
             ));
             break;

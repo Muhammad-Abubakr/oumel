@@ -1,7 +1,8 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+import '../widgets/images_container.dart';
+import '../widgets/videos_container.dart';
 
 class PostItemScreen extends StatefulWidget {
   const PostItemScreen({super.key});
@@ -24,42 +25,14 @@ class _PostItemScreenState extends State<PostItemScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              /* Images / Videos Container */
-              Container(
-                // styling
-                alignment: Alignment.center,
-                height: 300.h,
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    color: Theme.of(context).colorScheme.secondary,
-                    style: BorderStyle.solid,
-                    width: 1,
-                  ),
-                  borderRadius: BorderRadius.circular(32.r),
-                ),
-
-                // child
-                child: 0 == 0
-                    ? const Text(
-                        'Upload images or videos to preview here',
-                        textAlign: TextAlign.center,
-                      )
-                    : ListView.separated(
-                        separatorBuilder: (context, _) => const VerticalDivider(),
-                        itemBuilder: (context, index) => Image.file(File('')),
-                        itemCount: 0,
-                      ),
-              ),
+              /* Images Container */
+              const ImagesContainer(),
 
               // spacing
               SizedBox(height: 96.h),
 
-              /* Uploader */
-              ElevatedButton.icon(
-                onPressed: () {},
-                icon: const Icon(Icons.file_upload_outlined),
-                label: const Text('Upload Images / Videos'),
-              ),
+              /* Videos Container */
+              const VideosContainer(),
 
               // spacing
               SizedBox(height: 96.h),

@@ -44,8 +44,8 @@ dependencies:
   firebase_storage: ^11.2.2
   image_picker: ^0.8.8
   pinput: ^2.2.31
-  video_player: ^2.6.1
   cached_network_image: ^3.2.3
+  appinio_video_player: ^1.2.1
 
 dev_dependencies:
   flutter_test:

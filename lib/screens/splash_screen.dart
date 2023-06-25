@@ -18,6 +18,9 @@ class SplashScreen extends StatelessWidget {
     /* Do the initializations */
     context.read<UserbaseCubit>().initialize();
 
+    /* Caching images */
+    precacheImage(const AssetImage("assets/selling.jpg"), context);
+
     return BlocListener<UserBloc, UserState>(
       listener: (context, state) {
         Future.delayed(const Duration(seconds: 3)).then((_) {

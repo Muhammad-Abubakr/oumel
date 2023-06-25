@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../widgets/images_container.dart';
@@ -12,30 +13,48 @@ class PostItemScreen extends StatefulWidget {
 }
 
 class _PostItemScreenState extends State<PostItemScreen> {
+  /* Controllers */
+  final TextEditingController name = TextEditingController();
+  final TextEditingController description = TextEditingController();
+  final TextEditingController category = TextEditingController();
+  final TextEditingController condition = TextEditingController();
+  final TextEditingController location = TextEditingController();
+  final TextEditingController price = TextEditingController();
+
+  final TextEditingController hexController = TextEditingController();
+  late Color pickerColor;
+  DateTime year = DateTime.now();
+
+  bool includeAddOn = false;
+
+  @override
+  void didChangeDependencies() {
+    pickerColor = Theme.of(context).colorScheme.primary;
+
+    super.didChangeDependencies();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Post item'),
+        centerTitle: true,
       ),
       body: SizedBox(
         width: 1.sw,
         child: SingleChildScrollView(
           padding: EdgeInsets.symmetric(horizontal: 0.05.sw),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              /* Images Container */
-              const ImagesContainer(),
-
-              // spacing
-              SizedBox(height: 96.h),
-
-              /* Videos Container */
-              const VideosContainer(),
-
-              // spacing
-              SizedBox(height: 96.h),
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 64.0.h),
+                child: Text(
+                  'Item Details',
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+              ),
 
               // TextFields
               Form(
@@ -43,6 +62,8 @@ class _PostItemScreenState extends State<PostItemScreen> {
                   children: [
                     // name
                     TextFormField(
+                      controller: name,
+                      keyboardType: TextInputType.name,
                       decoration: const InputDecoration(
                         label: Text('Item Name'),
                       ),
@@ -51,17 +72,10 @@ class _PostItemScreenState extends State<PostItemScreen> {
                     // spacing
                     SizedBox(height: 24.h),
 
-                    // description
-                    TextFormField(
-                      decoration: const InputDecoration(
-                        label: Text('Description'),
-                      ),
-                    ),
-                    // spacing
-                    SizedBox(height: 24.h),
-
                     // category
                     TextFormField(
+                      controller: category,
+                      keyboardType: TextInputType.text,
                       decoration: const InputDecoration(
                         label: Text('Category'),
                       ),
@@ -71,6 +85,7 @@ class _PostItemScreenState extends State<PostItemScreen> {
 
                     // condition
                     TextFormField(
+                      controller: condition,
                       decoration: const InputDecoration(
                         label: Text('Condition'),
                       ),
@@ -80,6 +95,8 @@ class _PostItemScreenState extends State<PostItemScreen> {
 
                     // location
                     TextFormField(
+                      controller: location,
+                      keyboardType: TextInputType.streetAddress,
                       decoration: const InputDecoration(
                         label: Text('Location'),
                       ),
@@ -89,66 +106,119 @@ class _PostItemScreenState extends State<PostItemScreen> {
 
                     // price
                     TextFormField(
+                      controller: price,
+                      keyboardType: TextInputType.number,
                       decoration: const InputDecoration(
                         label: Text('Price'),
                       ),
                     ),
 
                     // spacing
-                    SizedBox(height: 64.h),
+                    SizedBox(height: 24.h),
 
-                    Text(
-                      'Add-ons',
-                      style: Theme.of(context).textTheme.titleLarge,
+                    // description
+                    TextFormField(
+                      controller: description,
+                      maxLines: null,
+                      minLines: 6,
+                      keyboardType: TextInputType.multiline,
+                      decoration: const InputDecoration(
+                        label: Text('Description'),
+                      ),
                     ),
 
                     // spacing
-                    SizedBox(height: 24.h),
+                    SizedBox(height: 96.h),
+
+                    /* Images Container */
+                    const ImagesContainer(),
+
+                    // spacing
+                    SizedBox(height: 96.h),
+
+                    /* Videos Container */
+                    const VideosContainer(),
+
+                    // spacing
+                    SizedBox(height: 96.h),
+
+                    /* Title: Add-ons */
+                    Padding(
+                      padding: EdgeInsets.symmetric(vertical: 48.h),
+                      child: Text(
+                        'Add-ons',
+                        style: Theme.of(context).textTheme.titleLarge,
+                      ),
+                    ),
 
                     // model
-                    TextFormField(
-                      decoration: const InputDecoration(
-                        label: Text('Model'),
-                      ),
-                    ),
-
-                    // spacing
-                    SizedBox(height: 24.h),
-
-                    // color
-                    TextFormField(
-                      decoration: const InputDecoration(
-                        label: Text('Color'),
-                      ),
-                    ),
-
-                    // spacing
-                    SizedBox(height: 24.h),
-
-                    // year
-                    TextFormField(
-                      decoration: const InputDecoration(
-                        label: Text('Year'),
-                      ),
-                    ),
-
-                    // spacing
-                    SizedBox(height: 128.h),
-
-                    // Publish
-                    /* Uploader */
-                    ElevatedButton(
-                      onPressed: () {},
-                      style: ElevatedButton.styleFrom(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 172.w,
-                          vertical: 32.h,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        // Model
+                        ChoiceChip(
+                          selected: includeAddOn,
+                          onSelected: (val) => setState(() => includeAddOn = val),
+                          label: const Text('Model'),
                         ),
-                      ),
-                      child: const Text('Publish'),
+
+                        // Color
+                        if (includeAddOn) ...[
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: pickerColor,
+                              foregroundColor: pickerColor.computeLuminance() > 0.5
+                                  ? Colors.grey.shade700
+                                  : Colors.white,
+                            ),
+                            onPressed: () => showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                backgroundColor:
+                                    Theme.of(context).dialogBackgroundColor.withAlpha(230),
+                                titlePadding: const EdgeInsets.all(0),
+                                contentPadding: const EdgeInsets.all(0),
+                                content: SingleChildScrollView(
+                                  child: ColorPicker(
+                                      enableAlpha: true,
+                                      displayThumbColor: true,
+                                      pickerAreaBorderRadius: BorderRadius.circular(72.r),
+                                      pickerColor: pickerColor,
+                                      onColorChanged: (color) {
+                                        setState(() => pickerColor = color);
+                                      }),
+                                ),
+                              ),
+                            ),
+                            child: Text(colorToHex(pickerColor, includeHashSign: true)),
+                          ),
+
+                          // Year
+                          ElevatedButton(
+                            onPressed: () => showDialog(
+                              context: context,
+                              builder: (context) => Dialog(
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(96.r),
+                                  child: YearPicker(
+                                    firstDate: DateTime(1900),
+                                    lastDate: DateTime.now(),
+                                    selectedDate: year,
+                                    currentDate: year,
+                                    onChanged: (date) {
+                                      setState(() => year = date);
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
+                                ),
+                              ),
+                            ),
+                            child: Text('${year.year}'),
+                          )
+                        ]
+                      ],
                     ),
 
-                    // spacing
                     SizedBox(height: 128.h),
                   ],
                 ),
@@ -156,6 +226,21 @@ class _PostItemScreenState extends State<PostItemScreen> {
             ],
           ),
         ),
+      ),
+      bottomNavigationBar: OutlinedButton(
+        onPressed: () {},
+        style: OutlinedButton.styleFrom(
+            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            side: BorderSide.none,
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.zero,
+            ),
+            padding: EdgeInsets.symmetric(
+              vertical: 48.h,
+            ),
+            backgroundColor: Theme.of(context).colorScheme.primary,
+            foregroundColor: Theme.of(context).colorScheme.onPrimary),
+        child: const Text('PUBLISH'),
       ),
     );
   }

@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
@@ -41,68 +39,70 @@ class _VideosContainerState extends State<VideosContainer> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Container(
-          height: 196.spMax,
-          width: 1.sw,
-          alignment: Alignment.center,
-          padding: EdgeInsets.all(5.spMax),
-          decoration: BoxDecoration(
-            border: Border.all(
-              color: Theme.of(context).colorScheme.secondary,
-              style: BorderStyle.solid,
-              width: 1,
+    return Card(
+      child: Column(
+        children: [
+          Container(
+            height: 196.spMax,
+            width: 1.sw,
+            alignment: Alignment.center,
+            padding: EdgeInsets.all(5.spMax),
+            decoration: BoxDecoration(
+              border: Border.all(
+                color: Theme.of(context).colorScheme.secondary.withAlpha(100),
+                style: BorderStyle.solid,
+                width: 1,
+              ),
+              borderRadius: BorderRadius.circular(32.r),
             ),
-            borderRadius: BorderRadius.circular(32.r),
-          ),
 
-          // child
-          child: _videos.isEmpty
-              ? const Text(
-                  'Upload videos to preview here',
-                  textAlign: TextAlign.center,
-                )
-              : ListView.separated(
-                  scrollDirection: Axis.vertical,
-                  separatorBuilder: (context, _) => const Divider(),
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      subtitle: Text(_videos[index].name),
-                      leading: IconButton(
-                        onPressed: () => setState(() {
-                          _videos.removeAt(index);
-                        }),
-                        icon: const Icon(
-                          Icons.remove_circle,
-                        ),
-                      ),
-                      trailing: TextButton(
-                        onPressed: () => showDialog(
-                          context: context,
-                          builder: (context) => Dialog.fullscreen(
-                            backgroundColor: Colors.black38,
-                            child: MyVideoPlayer(_videos[index]),
+            // child
+            child: _videos.isEmpty
+                ? const Text(
+                    'Upload videos to preview here',
+                    textAlign: TextAlign.center,
+                  )
+                : ListView.separated(
+                    scrollDirection: Axis.vertical,
+                    separatorBuilder: (context, _) => const Divider(),
+                    itemBuilder: (context, index) {
+                      return ListTile(
+                        subtitle: Text(_videos[index].name),
+                        leading: IconButton(
+                          onPressed: () => setState(() {
+                            _videos.removeAt(index);
+                          }),
+                          icon: const Icon(
+                            Icons.remove_circle,
                           ),
                         ),
-                        child: const Text('Preview'),
-                      ),
-                    );
-                  },
-                  itemCount: _videos.length,
-                ),
-        ),
+                        trailing: TextButton(
+                          onPressed: () => showDialog(
+                            context: context,
+                            builder: (context) => Dialog.fullscreen(
+                              backgroundColor: Colors.black38,
+                              child: MyVideoPlayer(_videos[index]),
+                            ),
+                          ),
+                          child: const Text('Preview'),
+                        ),
+                      );
+                    },
+                    itemCount: _videos.length,
+                  ),
+          ),
 
-        // spacing
-        SizedBox(height: 96.h),
-
-        /* Uploader */
-        ElevatedButton.icon(
-          onPressed: _pickVideo,
-          icon: const Icon(Icons.file_upload_outlined),
-          label: const Text('Capture or Upload Videos'),
-        ),
-      ],
+          /* Uploader */
+          Padding(
+            padding: EdgeInsets.symmetric(vertical: 24.h),
+            child: TextButton.icon(
+              onPressed: _pickVideo,
+              icon: const Icon(Icons.file_upload_outlined),
+              label: const Text('Capture or Upload Videos'),
+            ),
+          ),
+        ],
+      ),
     );
   }
 

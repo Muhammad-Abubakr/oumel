@@ -44,18 +44,18 @@ class SellScreen extends StatelessWidget {
                   alignment: Alignment.center,
                   children: [
                     // Background Image
-                    SizedBox(
-                      width: 1.sw,
-                      height: 720.h,
-                      child: ImageFiltered(
-                        imageFilter: ImageFilter.blur(
-                          sigmaX: 3,
-                          sigmaY: 3,
-                          tileMode: TileMode.clamp,
-                        ),
-                        child: Image.asset(
-                          'assets/selling.jpg',
-                          filterQuality: FilterQuality.none,
+                    ImageFiltered(
+                      imageFilter: ImageFilter.blur(
+                        sigmaX: 2,
+                        sigmaY: 2,
+                      ),
+                      child: Container(
+                        width: 1.sw,
+                        height: 720.h,
+                        decoration: const BoxDecoration(
+                          image: DecorationImage(
+                            image: AssetImage('assets/selling.jpg'),
+                          ),
                         ),
                       ),
                     ),
@@ -66,7 +66,7 @@ class SellScreen extends StatelessWidget {
                       style: Theme.of(context).textTheme.headlineLarge?.copyWith(
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
-                            shadows: kElevationToShadow[24],
+                            shadows: kElevationToShadow[9],
                           ),
                     ),
                   ],

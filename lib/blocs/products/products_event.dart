@@ -1,0 +1,32 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
+part of 'products_bloc.dart';
+
+abstract class ProductsEvent {}
+
+/* Post Product event */
+class PostProduct extends ProductsEvent {
+  /* Attributes */
+  final String name;
+  final String condition;
+  final String location;
+  final double price;
+  final ProductCategory category;
+  final String description;
+  final List<XFile>? images;
+  final List<XFile>? videos;
+  final String? color;
+  final DateTime? year;
+
+  PostProduct({
+    required this.name,
+    required this.condition,
+    required this.location,
+    required this.price,
+    required this.category,
+    required this.description,
+    this.images,
+    this.videos,
+    this.color,
+    this.year,
+  });
+}

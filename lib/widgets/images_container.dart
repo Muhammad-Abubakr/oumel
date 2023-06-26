@@ -1,8 +1,11 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
+
+import '../blocs/images/images_cubit.dart';
 
 class ImagesContainer extends StatefulWidget {
   const ImagesContainer({super.key});
@@ -13,6 +16,7 @@ class ImagesContainer extends StatefulWidget {
 
 class _ImagesContainerState extends State<ImagesContainer> {
   /* Image Picker */
+  late ImagesCubit imagesCubit;
   List<XFile> _images = List.empty(growable: true);
   final _imagePicker = ImagePicker();
 
@@ -23,6 +27,10 @@ class _ImagesContainerState extends State<ImagesContainer> {
   void didChangeDependencies() {
     // updating scaffold context
     scaffoldState = ScaffoldMessenger.of(context);
+
+    // Initializing images cubit and state
+    imagesCubit = context.watch<ImagesCubit>();
+    _images = imagesCubit.state.images;
 
     super.didChangeDependencies();
   }
@@ -101,7 +109,7 @@ class _ImagesContainerState extends State<ImagesContainer> {
                               padding: EdgeInsets.all(8.0.h),
                               child: InkWell(
                                 onTap: () => setState(() {
-                                  _images.removeAt(index);
+                                  imagesCubit.removeImage(_images[index]);
                                 }),
                                 child: Icon(
                                   Icons.remove_circle,
@@ -133,11 +141,11 @@ class _ImagesContainerState extends State<ImagesContainer> {
 
   /* Image Picker Utilizer */
   void _pickMultipleImages() async {
-    _imagePicker.pickMultiImage().then((value) {
+    _imagePicker.pickMultiImage(imageQuality: 70).then((value) {
       debugPrint('${value.length}');
 
       setState(() {
-        _images = value;
+        imagesCubit.addImage(value);
       });
     });
   }

@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:oumel/blocs/database_user/database_user_cubit.dart';
+import 'package:oumel/blocs/images/images_cubit.dart';
 import 'package:oumel/blocs/phone_verification/phone_verification_cubit.dart';
+import 'package:oumel/blocs/products/products_bloc.dart';
 import 'package:oumel/blocs/user/user_bloc.dart';
 import 'package:oumel/blocs/userbase/userbase_cubit.dart';
+import 'package:oumel/blocs/videos/videos_cubit.dart';
 import 'package:oumel/screens/wrapper/wrapper.dart';
 
 import 'screens/auth/authentication.dart';
@@ -22,6 +25,9 @@ class App extends StatelessWidget {
         BlocProvider<PhoneVerificationCubit>(create: (context) => PhoneVerificationCubit()),
         BlocProvider<DatabaseUserCubit>(create: (context) => DatabaseUserCubit()),
         BlocProvider<UserbaseCubit>(create: (context) => UserbaseCubit()),
+        BlocProvider<ImagesCubit>(create: (context) => ImagesCubit()),
+        BlocProvider<VideosCubit>(create: (context) => VideosCubit()),
+        BlocProvider<ProductsBloc>(create: (context) => ProductsBloc()),
       ],
       child: ScreenUtilInit(
         designSize: const Size(1080, 2340),

@@ -1,7 +1,12 @@
+import 'dart:io';
+
+import 'package:appinio_video_player/appinio_video_player.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../blocs/videos/videos_cubit.dart';
 import 'my_video_player.dart';
 
 class VideosContainer extends StatefulWidget {
@@ -12,9 +17,12 @@ class VideosContainer extends StatefulWidget {
 }
 
 class _VideosContainerState extends State<VideosContainer> {
+  /* Videos Cubit */
+  List<XFile> videos = List.empty();
+  late VideosCubit videosCubit;
+
   /* Image Picker */
   ImageSource? _imageSource;
-  final List<XFile> _videos = List.empty(growable: true);
   final _imagePicker = ImagePicker();
 
   // Scaffold State
@@ -24,6 +32,10 @@ class _VideosContainerState extends State<VideosContainer> {
   void didChangeDependencies() {
     // updating scaffold context
     scaffoldState = ScaffoldMessenger.of(context);
+
+    // Videos Cubit initialization
+    videosCubit = context.watch<VideosCubit>();
+    videos = videosCubit.state.videos;
 
     super.didChangeDependencies();
   }
@@ -57,7 +69,7 @@ class _VideosContainerState extends State<VideosContainer> {
             ),
 
             // child
-            child: _videos.isEmpty
+            child: videos.isEmpty
                 ? const Text(
                     'Upload videos to preview here',
                     textAlign: TextAlign.center,
@@ -67,10 +79,10 @@ class _VideosContainerState extends State<VideosContainer> {
                     separatorBuilder: (context, _) => const Divider(),
                     itemBuilder: (context, index) {
                       return ListTile(
-                        subtitle: Text(_videos[index].name),
+                        subtitle: Text(videos[index].name),
                         leading: IconButton(
                           onPressed: () => setState(() {
-                            _videos.removeAt(index);
+                            videosCubit.removeVideo(videos[index]);
                           }),
                           icon: const Icon(
                             Icons.remove_circle,
@@ -81,14 +93,14 @@ class _VideosContainerState extends State<VideosContainer> {
                             context: context,
                             builder: (context) => Dialog.fullscreen(
                               backgroundColor: Colors.black38,
-                              child: MyVideoPlayer(_videos[index]),
+                              child: MyVideoPlayer(videos[index]),
                             ),
                           ),
                           child: const Text('Preview'),
                         ),
                       );
                     },
-                    itemCount: _videos.length,
+                    itemCount: videos.length,
                   ),
           ),
 
@@ -183,12 +195,21 @@ two sources: Camera or Gallery */
     // Check if Image Source is Null, Cancel the Operation
     if (_validateSource()) {
       /* Else Pick the Image File */
-      _imagePicker.pickVideo(source: _imageSource!).then((value) {
+      _imagePicker
+          .pickVideo(source: _imageSource!, maxDuration: const Duration(minutes: 1))
+          .then((value) async {
         if (value != null) {
-          /* Do Something with Video */
-          setState(() {
-            _videos.add(value);
-          });
+          /* Validate the maximum duration */
+          VideoPlayerController validator = VideoPlayerController.file(File(value.path));
+          await validator.initialize();
+
+          debugPrint(validator.value.duration.toString());
+          if (validator.value.duration > const Duration(seconds: 60)) {
+            showErrorDialog();
+          } else {
+            /* updates videos cubit */
+            videosCubit.addVideo(value);
+          }
         } else {
           /* Show the SnackBar telling the user that no image was selected */
           _noImagePickedOrCaptured();
@@ -197,5 +218,14 @@ two sources: Camera or Gallery */
         _imageSource = null;
       });
     }
+  }
+
+  void showErrorDialog() {
+    showDialog(
+        context: context,
+        builder: (context) => const AlertDialog(
+              title: Text('Error'),
+              content: Text('Video duration must be under 60 seconds'),
+            ));
   }
 }

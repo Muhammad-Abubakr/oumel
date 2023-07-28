@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+// import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../blocs/images/images_cubit.dart';
 import '../blocs/products/products_bloc.dart';
 import '../blocs/videos/videos_cubit.dart';
 import '../models/product.dart';
+import '../widgets/custom_text_field.dart';
 import '../widgets/images_container.dart';
 import '../widgets/videos_container.dart';
 
@@ -28,17 +29,21 @@ class _PostItemScreenState extends State<PostItemScreen> {
   final TextEditingController condition = TextEditingController();
   final TextEditingController location = TextEditingController();
   final TextEditingController price = TextEditingController();
+  final TextEditingController model = TextEditingController();
+  final TextEditingController color = TextEditingController();
+  final TextEditingController year = TextEditingController();
+  final TextEditingController quantity = TextEditingController();
 
   ProductCategory category = ProductCategory.none;
-  final TextEditingController hexController = TextEditingController();
-  late Color pickerColor;
-  DateTime year = DateTime.now();
+  // final TextEditingController hexController = TextEditingController();
+  // late Color pickerColor;
+  // DateTime year = DateTime.now();
 
-  bool includeAddOn = false;
+  // bool includeAddOn = false;
 
   @override
   void didChangeDependencies() {
-    pickerColor = Theme.of(context).colorScheme.primary;
+    // pickerColor = Theme.of(context).colorScheme.primary;
 
     imagesCubit = context.watch<ImagesCubit>();
     videosCubit = context.watch<VideosCubit>();
@@ -153,6 +158,7 @@ class _PostItemScreenState extends State<PostItemScreen> {
                           label: Text('Location'),
                         ),
                       ),
+
                       // spacing
                       SizedBox(height: 36.h),
 
@@ -162,6 +168,18 @@ class _PostItemScreenState extends State<PostItemScreen> {
                         keyboardType: TextInputType.number,
                         decoration: const InputDecoration(
                           label: Text('Price'),
+                        ),
+                      ),
+
+                      // spacing
+                      SizedBox(height: 36.h),
+
+                      // quantity
+                      TextFormField(
+                        controller: quantity,
+                        keyboardType: TextInputType.number,
+                        decoration: const InputDecoration(
+                          label: Text('Quantity'),
                         ),
                       ),
 
@@ -256,73 +274,27 @@ class _PostItemScreenState extends State<PostItemScreen> {
                         ),
                       ),
 
-                      // model
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          // Model
-                          ChoiceChip(
-                            selected: includeAddOn,
-                            onSelected: (val) => setState(() => includeAddOn = val),
-                            label: const Text('Model'),
+                          // model
+                          CustomTextField(
+                            'Model',
+                            model,
                           ),
-
-                          // Color
-                          if (includeAddOn) ...[
-                            ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: pickerColor,
-                                foregroundColor: pickerColor.computeLuminance() > 0.5
-                                    ? Colors.grey.shade700
-                                    : Colors.white,
-                              ),
-                              onPressed: () => showDialog(
-                                context: context,
-                                builder: (context) => AlertDialog(
-                                  backgroundColor:
-                                      Theme.of(context).dialogBackgroundColor.withAlpha(230),
-                                  titlePadding: const EdgeInsets.all(0),
-                                  contentPadding: const EdgeInsets.all(0),
-                                  content: SingleChildScrollView(
-                                    child: ColorPicker(
-                                        enableAlpha: true,
-                                        displayThumbColor: true,
-                                        pickerAreaBorderRadius: BorderRadius.circular(72.r),
-                                        pickerColor: pickerColor,
-                                        onColorChanged: (color) {
-                                          setState(() => pickerColor = color);
-                                        }),
-                                  ),
-                                ),
-                              ),
-                              child: Text(colorToHex(pickerColor, includeHashSign: true)),
-                            ),
-
-                            // Year
-                            ElevatedButton(
-                              onPressed: () => showDialog(
-                                context: context,
-                                builder: (context) => Dialog(
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(96.r),
-                                    child: YearPicker(
-                                      firstDate: DateTime(1900),
-                                      lastDate: DateTime.now(),
-                                      selectedDate: year,
-                                      currentDate: year,
-                                      onChanged: (date) {
-                                        setState(() => year = date);
-                                        Navigator.of(context).pop();
-                                      },
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              child: Text('${year.year}'),
-                            )
-                          ]
+                          // color
+                          CustomTextField(
+                            'Color',
+                            color,
+                          ),
+                          // year
+                          CustomTextField(
+                            'Year',
+                            year,
+                          ),
                         ],
                       ),
+                      // _buildModelOption(),
 
                       SizedBox(height: 128.h),
                     ],
@@ -333,6 +305,7 @@ class _PostItemScreenState extends State<PostItemScreen> {
           ),
         ),
         bottomNavigationBar: OutlinedButton(
+          // onPressed: () => {},
           onPressed: () => publisher(productsBloc),
           style: OutlinedButton.styleFrom(
               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -363,6 +336,7 @@ class _PostItemScreenState extends State<PostItemScreen> {
         condition.text.isEmpty ||
         location.text.isEmpty ||
         price.text.isEmpty ||
+        quantity.text.isEmpty ||
         description.text.isEmpty ||
         category.index == 0) {
       /* Show the Dialog that User needs to fill all required fields */
@@ -380,114 +354,70 @@ class _PostItemScreenState extends State<PostItemScreen> {
               ));
     } else {
       try {
-        if (includeAddOn) {
-          if (imagesCubit.isNotEmpty() && videosCubit.isNotEmpty()) {
-            productsBloc.add(
-              PostProduct(
-                name: name.text.trim(),
-                condition: condition.text.trim(),
-                location: location.text.trim(),
-                price: double.parse(price.text.trim()),
-                category: category,
-                description: description.text.trim(),
-                color: colorToHex(pickerColor),
-                year: year,
-                images: imagesCubit.state.images,
-                videos: videosCubit.state.videos,
-              ),
-            );
-          } else if (imagesCubit.isEmpty() && videosCubit.isNotEmpty()) {
-            productsBloc.add(
-              PostProduct(
-                name: name.text.trim(),
-                condition: condition.text.trim(),
-                location: location.text.trim(),
-                price: double.parse(price.text.trim()),
-                category: category,
-                description: description.text.trim(),
-                color: colorToHex(pickerColor),
-                year: year,
-                videos: videosCubit.state.videos,
-              ),
-            );
-          } else if (imagesCubit.isNotEmpty() && videosCubit.isEmpty()) {
-            productsBloc.add(
-              PostProduct(
-                name: name.text.trim(),
-                condition: condition.text.trim(),
-                location: location.text.trim(),
-                price: double.parse(price.text.trim()),
-                category: category,
-                description: description.text.trim(),
-                color: colorToHex(pickerColor),
-                year: year,
-                images: imagesCubit.state.images,
-              ),
-            );
-          } else if (imagesCubit.isEmpty() && videosCubit.isEmpty()) {
-            productsBloc.add(
-              PostProduct(
-                name: name.text.trim(),
-                condition: condition.text.trim(),
-                location: location.text.trim(),
-                price: double.parse(price.text.trim()),
-                category: category,
-                description: description.text.trim(),
-                color: colorToHex(pickerColor),
-                year: year,
-              ),
-            );
-          }
+        if (imagesCubit.isEmpty() && videosCubit.isNotEmpty()) {
+          productsBloc.add(
+            PostProduct(
+              name: name.text.trim(),
+              condition: condition.text.trim(),
+              location: location.text.trim(),
+              price: double.parse(price.text.trim()),
+              category: category,
+              description: description.text.trim(),
+              color: color.text.isNotEmpty ? color.text.trim() : null,
+              year: year.text.isNotEmpty ? year.text.trim() : null,
+              model: model.text.isNotEmpty ? model.text.trim() : null,
+              quantity: int.parse(quantity.text.trim()),
+              videos: videosCubit.state.videos,
+            ),
+          );
+        } else if (imagesCubit.isNotEmpty() && videosCubit.isEmpty()) {
+          productsBloc.add(
+            PostProduct(
+              name: name.text.trim(),
+              condition: condition.text.trim(),
+              location: location.text.trim(),
+              price: double.parse(price.text.trim()),
+              category: category,
+              description: description.text.trim(),
+              color: color.text.isNotEmpty ? color.text.trim() : null,
+              year: year.text.isNotEmpty ? year.text.trim() : null,
+              model: model.text.isNotEmpty ? model.text.trim() : null,
+              quantity: int.parse(quantity.text.trim()),
+              images: imagesCubit.state.images,
+            ),
+          );
+        } else if (imagesCubit.isEmpty() && videosCubit.isEmpty()) {
+          productsBloc.add(
+            PostProduct(
+              name: name.text.trim(),
+              condition: condition.text.trim(),
+              location: location.text.trim(),
+              price: double.parse(price.text.trim()),
+              category: category,
+              description: description.text.trim(),
+              color: color.text.isNotEmpty ? color.text.trim() : null,
+              year: year.text.isNotEmpty ? year.text.trim() : null,
+              model: model.text.isNotEmpty ? model.text.trim() : null,
+              quantity: int.parse(quantity.text.trim()),
+            ),
+          );
         } else {
-          if (imagesCubit.isNotEmpty() && videosCubit.isNotEmpty()) {
-            productsBloc.add(
-              PostProduct(
-                name: name.text.trim(),
-                condition: condition.text.trim(),
-                location: location.text.trim(),
-                price: double.parse(price.text.trim()),
-                category: category,
-                description: description.text.trim(),
-                images: imagesCubit.state.images,
-                videos: videosCubit.state.videos,
-              ),
-            );
-          } else if (imagesCubit.isEmpty() && videosCubit.isNotEmpty()) {
-            productsBloc.add(
-              PostProduct(
-                name: name.text.trim(),
-                condition: condition.text.trim(),
-                location: location.text.trim(),
-                price: double.parse(price.text.trim()),
-                category: category,
-                description: description.text.trim(),
-                videos: videosCubit.state.videos,
-              ),
-            );
-          } else if (imagesCubit.isNotEmpty() && videosCubit.isEmpty()) {
-            productsBloc.add(
-              PostProduct(
-                name: name.text.trim(),
-                condition: condition.text.trim(),
-                location: location.text.trim(),
-                price: double.parse(price.text.trim()),
-                category: category,
-                description: description.text.trim(),
-                images: imagesCubit.state.images,
-              ),
-            );
-          } else if (imagesCubit.isEmpty() && videosCubit.isEmpty()) {
-            productsBloc.add(
-              PostProduct(
-                name: name.text.trim(),
-                condition: condition.text.trim(),
-                location: location.text.trim(),
-                price: double.parse(price.text.trim()),
-                category: category,
-                description: description.text.trim(),
-              ),
-            );
-          }
+          productsBloc.add(
+            PostProduct(
+              name: name.text.trim(),
+              condition: condition.text.trim(),
+              location: location.text.trim(),
+              price: double.parse(price.text.trim()),
+              category: category,
+              description: description.text.trim(),
+              color: color.text.isNotEmpty ? color.text.trim() : null,
+              year: year.text.isNotEmpty ? year.text.trim() : null,
+              model: model.text.isNotEmpty ? model.text.trim() : null,
+              quantity: int.parse(quantity.text.trim()),
+              images: imagesCubit.state.images,
+              videos: videosCubit.state.videos,
+            ),
+          );
         }
       } catch (error) {
         showDialog(
@@ -506,4 +436,71 @@ class _PostItemScreenState extends State<PostItemScreen> {
       }
     }
   }
+
+//   Widget _buildModelOption() {
+//     return Row(
+//       mainAxisAlignment: MainAxisAlignment.spaceAround,
+//       children: [
+//         // Model
+//         ChoiceChip(
+//           selected: includeAddOn,
+//           onSelected: (val) => setState(() => includeAddOn = val),
+//           label: const Text('Model'),
+//         ),
+
+//         // Color
+//         if (includeAddOn) ...[
+//           ElevatedButton(
+//             style: ElevatedButton.styleFrom(
+//               backgroundColor: pickerColor,
+//               foregroundColor:
+//                   pickerColor.computeLuminance() > 0.5 ? Colors.grey.shade700 : Colors.white,
+//             ),
+//             onPressed: () => showDialog(
+//               context: context,
+//               builder: (context) => AlertDialog(
+//                 backgroundColor: Theme.of(context).dialogBackgroundColor.withAlpha(230),
+//                 titlePadding: const EdgeInsets.all(0),
+//                 contentPadding: const EdgeInsets.all(0),
+//                 content: SingleChildScrollView(
+//                   child: ColorPicker(
+//                       enableAlpha: true,
+//                       displayThumbColor: true,
+//                       pickerAreaBorderRadius: BorderRadius.circular(72.r),
+//                       pickerColor: pickerColor,
+//                       onColorChanged: (color) {
+//                         setState(() => pickerColor = color);
+//                       }),
+//                 ),
+//               ),
+//             ),
+//             child: Text(colorToHex(pickerColor, includeHashSign: true)),
+//           ),
+
+//           // Year
+//           ElevatedButton(
+//             onPressed: () => showDialog(
+//               context: context,
+//               builder: (context) => Dialog(
+//                 child: ClipRRect(
+//                   borderRadius: BorderRadius.circular(96.r),
+//                   child: YearPicker(
+//                     firstDate: DateTime(1900),
+//                     lastDate: DateTime.now(),
+//                     selectedDate: year,
+//                     currentDate: year,
+//                     onChanged: (date) {
+//                       setState(() => year = date);
+//                       Navigator.of(context).pop();
+//                     },
+//                   ),
+//                 ),
+//               ),
+//             ),
+//             child: Text('${year.year}'),
+//           )
+//         ]
+//       ],
+//     );
+//   }
 }

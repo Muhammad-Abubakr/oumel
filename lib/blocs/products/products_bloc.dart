@@ -126,8 +126,10 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
           description: event.description,
           color: event.color,
           year: event.year,
+          model: event.model,
           images: imagesURLs,
           videos: videosURLs,
+          quantity: event.quantity,
         );
 
         // and finally upload the product to the database

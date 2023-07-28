@@ -14,8 +14,10 @@ class PostProduct extends ProductsEvent {
   final String description;
   final List<XFile>? images;
   final List<XFile>? videos;
+  final int quantity;
+  final String? model;
   final String? color;
-  final DateTime? year;
+  final String? year;
 
   PostProduct({
     required this.name,
@@ -24,8 +26,10 @@ class PostProduct extends ProductsEvent {
     required this.price,
     required this.category,
     required this.description,
+    required this.quantity,
     this.images,
     this.videos,
+    this.model,
     this.color,
     this.year,
   });

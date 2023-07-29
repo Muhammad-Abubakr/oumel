@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:oumel/blocs/cubit/saved_products_cubit.dart';
 import 'package:oumel/blocs/userbase/userbase_cubit.dart';
 import 'package:oumel/screens/auth/authentication.dart';
 import 'package:oumel/screens/wrapper/wrapper.dart';
@@ -17,6 +18,7 @@ class SplashScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     /* Do the initializations */
     context.read<UserbaseCubit>().initialize();
+    context.read<SavedProductsCubit>().initialize();
 
     /* Caching images */
     precacheImage(const AssetImage("assets/selling.jpg"), context);

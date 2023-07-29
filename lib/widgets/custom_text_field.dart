@@ -15,7 +15,7 @@ class CustomTextField extends StatelessWidget {
       child: TextField(
         controller: _controller,
         decoration: InputDecoration(
-          contentPadding: EdgeInsets.all(20.h),
+          contentPadding: EdgeInsets.all(30.h),
           label: Text(_label),
         ),
       ),

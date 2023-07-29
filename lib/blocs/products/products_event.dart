@@ -34,3 +34,15 @@ class PostProduct extends ProductsEvent {
     this.year,
   });
 }
+
+/* Get all products of the user */
+class Initialize extends ProductsEvent {
+  Initialize();
+}
+
+/* Private Events */
+class _Update extends ProductsEvent {
+  final List<Product> products;
+
+  _Update({this.products = const []});
+}

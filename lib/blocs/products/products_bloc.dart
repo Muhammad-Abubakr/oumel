@@ -5,8 +5,9 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 import '../../models/product.dart';
 
@@ -28,6 +29,10 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
         super(ProductsInitial(products: List.empty(), status: ProductsStatus.initialized)) {
     /* Events */
     on<PostProduct>(_handlePostProduct);
+    on<Initialize>(_initializer);
+
+    /* Private Events */
+    on<_Update>(_updator);
   }
 
   /* Post Item Handler 
@@ -104,11 +109,11 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
             // get the reference to user product in storage and place video there
             final Reference newProductVideo = productVideosRef.child(video.name);
 
-            // put the file in database
             await newProductVideo.putFile(File(video.path));
 
             // get the download url
             final String downloadUrl = await newProductVideo.getDownloadURL();
+            // put the file in database
 
             // add to videos url
             videosURLs.add(downloadUrl);
@@ -118,6 +123,7 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
         // Now that once we have handled both images and videos
         // we will make the product instance
         final Product product = Product(
+          newProductRef.path.split('/').last,
           name: event.name,
           condition: event.condition,
           location: event.location,
@@ -147,5 +153,54 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
         error: error.toString(),
       ));
     }
+  }
+
+  // Get all products for the current logged in user
+  FutureOr<void> _initializer(Initialize event, Emitter<ProductsState> emit) {
+    emit(ProductsUpdate(products: state.products, status: ProductsStatus.processing));
+
+    try {
+      // Get the reference to the User Products
+      final userProductsRef = _productsRef.child(_currentUser!.uid);
+
+      // Subscribe to the changes under this reference
+      userProductsRef.onValue.listen((event) {
+        // snapshot data container
+        List<Product> products = List.empty(growable: true);
+
+        // get the latest snapshot
+        DataSnapshot data = event.snapshot;
+
+        // checking if data exists
+        if (data.value != null) {
+          // Parsing the values
+          final parsed = data.value! as Map<dynamic, dynamic>;
+
+          // iterate over the products under the user ref
+          for (var product in parsed.values) {
+            // parse the product for our product model
+            final Product modalProduct = Product.fromJson(product);
+
+            products.add(modalProduct);
+          }
+        }
+
+        add(_Update(products: products));
+      });
+
+      // incase of error
+    } on FirebaseException catch (error) {
+      emit(ProductsUpdate(
+        products: [...state.products],
+        error: error.toString(),
+        status: ProductsStatus.error,
+      ));
+    }
+  }
+
+  /* Private event Handlers */
+  FutureOr<void> _updator(_Update event, Emitter<ProductsState> emit) {
+    debugPrint(event.products.toString());
+    emit(ProductsUpdate(products: event.products, status: ProductsStatus.updated));
   }
 }

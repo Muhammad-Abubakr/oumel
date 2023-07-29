@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:oumel/blocs/cubit/saved_products_cubit.dart';
 import 'package:oumel/blocs/database_user/database_user_cubit.dart';
 import 'package:oumel/blocs/images/images_cubit.dart';
 import 'package:oumel/blocs/phone_verification/phone_verification_cubit.dart';
@@ -8,6 +9,7 @@ import 'package:oumel/blocs/products/products_bloc.dart';
 import 'package:oumel/blocs/user/user_bloc.dart';
 import 'package:oumel/blocs/userbase/userbase_cubit.dart';
 import 'package:oumel/blocs/videos/videos_cubit.dart';
+import 'package:oumel/screens/drawer/categories_screen.dart';
 import 'package:oumel/screens/wrapper/wrapper.dart';
 
 import 'screens/auth/authentication.dart';
@@ -28,6 +30,7 @@ class App extends StatelessWidget {
         BlocProvider<ImagesCubit>(create: (context) => ImagesCubit()),
         BlocProvider<VideosCubit>(create: (context) => VideosCubit()),
         BlocProvider<ProductsBloc>(create: (context) => ProductsBloc()),
+        BlocProvider<SavedProductsCubit>(create: (context) => SavedProductsCubit()),
       ],
       child: ScreenUtilInit(
         designSize: const Size(1080, 2340),
@@ -38,6 +41,9 @@ class App extends StatelessWidget {
 
           /* App Theme */
           theme: ThemeData(
+            drawerTheme: const DrawerThemeData(
+              backgroundColor: Color(0xFF282828),
+            ),
             colorScheme: ColorScheme.fromSeed(
               seedColor: const Color(0xFFEA335B),
               secondary: const Color(0xFF282828),
@@ -68,6 +74,7 @@ class App extends StatelessWidget {
             Wrapper.routeName: (context) => const Wrapper(),
             SplashScreen.routeName: (context) => const SplashScreen(),
             AuthenticationScreen.routeName: (context) => const AuthenticationScreen(),
+            CategoriesScreen.routeName: (context) => const CategoriesScreen(),
           },
         ),
       ),

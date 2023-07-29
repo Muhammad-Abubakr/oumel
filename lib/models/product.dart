@@ -17,6 +17,7 @@ enum ProductCategory {
 
 class Product extends Equatable {
   /* Attributes */
+  final String pid;
   final String name;
   final String condition;
   final String location;
@@ -31,7 +32,8 @@ class Product extends Equatable {
   final String? year;
 
   // Constructor
-  const Product({
+  const Product(
+    this.pid, {
     required this.name,
     required this.condition,
     required this.location,
@@ -47,6 +49,7 @@ class Product extends Equatable {
   });
 
   Product copyWith({
+    String? pid,
     String? name,
     String? condition,
     String? location,
@@ -61,6 +64,7 @@ class Product extends Equatable {
     String? year,
   }) {
     return Product(
+      pid ?? this.pid,
       name: name ?? this.name,
       condition: condition ?? this.condition,
       location: location ?? this.location,
@@ -78,6 +82,7 @@ class Product extends Equatable {
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
+      'pid': pid,
       'name': name,
       'condition': condition,
       'location': location,
@@ -95,6 +100,7 @@ class Product extends Equatable {
 
   factory Product.fromMap(Map<String, dynamic> map) {
     return Product(
+      map['pid'] as String,
       name: map['name'] as String,
       condition: map['condition'] as String,
       location: map['location'] as String,
@@ -102,12 +108,18 @@ class Product extends Equatable {
       quantity: map['quantity'] as int,
       description: map['description'] as String,
       category: ProductCategory.values
-          .firstWhere((element) => describeEnum(element.name) == map['category']),
-      images: map['images'] != null ? map['images'] as List<String> : null,
-      videos: map['videos'] != null ? map['videos'] as List<String> : null,
-      model: map['model'] != null ? map['model'] as String : null,
-      color: map['color'] != null ? map['color'] as String : null,
-      year: map['year'] != null ? map['year'] as String : null,
+          .firstWhere((element) => describeEnum(element) == map['category']),
+      images: map['images'] != null ? List<String>.from(map['images']) : null,
+      videos: map['videos'] != null ? List<String>.from(map['videos']) : null,
+      model: map['model'] != null && (map['model'] as String).isNotEmpty
+          ? map['model'] as String
+          : null,
+      color: map['color'] != null && (map['color'] as String).isNotEmpty
+          ? map['color'] as String
+          : null,
+      year: map['year'] != null && (map['year'] as String).isNotEmpty
+          ? map['year'] as String
+          : null,
     );
   }
 
@@ -119,6 +131,7 @@ class Product extends Equatable {
   @override
   List<Object?> get props {
     return [
+      pid,
       name,
       condition,
       location,

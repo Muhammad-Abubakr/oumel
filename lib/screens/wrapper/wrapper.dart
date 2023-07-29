@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:oumel/screens/auth/authentication.dart';
 import 'package:oumel/screens/wrapper/basket_screen.dart';
 import 'package:oumel/screens/wrapper/home_screen.dart';
@@ -9,6 +8,7 @@ import 'package:oumel/screens/wrapper/profile_screen.dart';
 import 'package:oumel/screens/wrapper/sell_screen.dart';
 
 import '../../blocs/user/user_bloc.dart';
+import '../../widgets/main_drawer.dart';
 
 class Wrapper extends StatefulWidget {
   // route name
@@ -105,9 +105,7 @@ class _WrapperState extends State<Wrapper> {
         ),
 
         /* Main Drawer */
-        drawer: Drawer(
-          width: 0.7.sw,
-        ),
+        drawer: const MainDrawer(),
 
         /* Body */
         body: screens[currentScreen],

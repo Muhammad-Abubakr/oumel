@@ -3,6 +3,7 @@ part of 'products_bloc.dart';
 enum ProductsStatus {
   initialized,
   processing,
+  updated,
   success,
   error,
 }

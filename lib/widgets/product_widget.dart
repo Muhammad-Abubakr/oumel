@@ -20,52 +20,105 @@ class ProductWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final SavedProductsCubit savedProductsCubit = context.watch<SavedProductsCubit>();
     final savedProducts = savedProductsCubit.state.products;
+    final isSaved = savedProducts.values.contains(products[index].pid);
 
     return Card(
       elevation: 4,
+      color: Colors.blueGrey.shade100,
       child: GridTile(
         header: Container(
-          padding: EdgeInsets.symmetric(horizontal: 24.r, vertical: 16.r),
+          padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 18.h),
           decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.primary.withOpacity(0.4),
+            color: Theme.of(context).colorScheme.secondary.withOpacity(0.5),
             borderRadius: BorderRadius.only(
               topLeft: Radius.circular(24.r),
               topRight: Radius.circular(24.r),
             ),
           ),
-          child: Text(
-            products[index].name,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: Theme.of(context).colorScheme.onPrimary,
-            ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              SizedBox(
+                width: 350.w,
+                child: Text(
+                  products[index].name,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14.spMax,
+                    overflow: TextOverflow.ellipsis,
+                    color: Theme.of(context).colorScheme.onSecondary,
+                  ),
+                ),
+              ),
+              InkWell(
+                onTap: () => savedProductsCubit.toggleSavedProduct(products[index]),
+                child: Icon(
+                  isSaved ? FontAwesomeIcons.solidBookmark : FontAwesomeIcons.bookmark,
+                  size: 18.spMax,
+                  color: Theme.of(context).colorScheme.onSecondary,
+                ),
+              ),
+            ],
           ),
         ),
         footer: Container(
+          padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 18.h),
           decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.5),
+            color: Theme.of(context).colorScheme.onSecondary.withOpacity(0.8),
             borderRadius: BorderRadius.only(
               bottomLeft: Radius.circular(24.r),
               bottomRight: Radius.circular(24.r),
             ),
           ),
-          child: FittedBox(
-            child: Row(
-              children: [
-                TextButton.icon(
-                  onPressed: () => savedProductsCubit.toggleSavedProduct(products[index]),
-                  icon: Icon(savedProducts.values.contains(products[index].pid)
-                      ? FontAwesomeIcons.solidBookmark
-                      : FontAwesomeIcons.bookmark),
-                  label: const Text('Save'),
-                ),
-                TextButton.icon(
-                  onPressed: () {},
-                  icon: const Icon(FontAwesomeIcons.cartShopping),
-                  label: const Text('Add to cart'),
-                ),
-              ],
-            ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Icon(
+                    FontAwesomeIcons.dollarSign,
+                    size: 14.spMax,
+                    color: Theme.of(context).colorScheme.secondary,
+                  ),
+                  SizedBox(
+                    width: 100.w,
+                    child: Text(
+                      products[index].price.toString(),
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.secondary,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14.spMax,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Icon(
+                    Icons.location_on,
+                    size: 18.spMax,
+                    color: Theme.of(context).colorScheme.secondary,
+                  ),
+                  SizedBox(
+                    width: 180.w,
+                    child: Text(
+                      products[index].location,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.secondary,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14.spMax,
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            ],
           ),
         ),
         child: products[index].images != null

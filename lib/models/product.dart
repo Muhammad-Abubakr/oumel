@@ -18,6 +18,7 @@ enum ProductCategory {
 class Product extends Equatable {
   /* Attributes */
   final String pid;
+  final String uid;
   final String name;
   final String condition;
   final String location;
@@ -34,6 +35,7 @@ class Product extends Equatable {
   // Constructor
   const Product(
     this.pid, {
+    required this.uid,
     required this.name,
     required this.condition,
     required this.location,
@@ -50,6 +52,7 @@ class Product extends Equatable {
 
   Product copyWith({
     String? pid,
+    String? uid,
     String? name,
     String? condition,
     String? location,
@@ -65,6 +68,7 @@ class Product extends Equatable {
   }) {
     return Product(
       pid ?? this.pid,
+      uid: uid ?? this.uid,
       name: name ?? this.name,
       condition: condition ?? this.condition,
       location: location ?? this.location,
@@ -83,6 +87,7 @@ class Product extends Equatable {
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'pid': pid,
+      'uid': uid,
       'name': name,
       'condition': condition,
       'location': location,
@@ -101,6 +106,7 @@ class Product extends Equatable {
   factory Product.fromMap(Map<String, dynamic> map) {
     return Product(
       map['pid'] as String,
+      uid: map['uid'] as String,
       name: map['name'] as String,
       condition: map['condition'] as String,
       location: map['location'] as String,
@@ -132,6 +138,7 @@ class Product extends Equatable {
   List<Object?> get props {
     return [
       pid,
+      uid,
       name,
       condition,
       location,

@@ -18,6 +18,7 @@ class CustomAppBarTitle extends StatelessWidget {
           borderRadius: BorderRadius.circular(48.r)),
       child: Text(
         title,
+        maxLines: 1,
         style: TextStyle(
           color: Theme.of(context).colorScheme.onPrimary,
           fontSize: 18.spMax,

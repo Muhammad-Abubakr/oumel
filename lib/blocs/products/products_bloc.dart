@@ -124,6 +124,7 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
         // we will make the product instance
         final Product product = Product(
           newProductRef.path.split('/').last,
+          uid: _currentUser!.uid,
           name: event.name,
           condition: event.condition,
           location: event.location,

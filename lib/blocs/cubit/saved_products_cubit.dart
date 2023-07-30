@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
-import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -14,12 +13,14 @@ class SavedProductsCubit extends Cubit<SavedProductsState> {
   final User? _currentUser = FirebaseAuth.instance.currentUser;
   final DatabaseReference _savedProductsRef = FirebaseDatabase.instance.ref('saved');
   late final DatabaseReference _currentUserSavedProductsRef;
+  late final DatabaseReference _currentUserProductsRef;
   late StreamSubscription _savedProductsStream;
 
   SavedProductsCubit() : super(const SavedProductsInitial({})) {
     _currentUserSavedProductsRef = _savedProductsRef.child(_currentUser!.uid);
   }
 
+  /* Initialize the SavedProductsCubit */
   void initialize() {
     // populate the cubit initially and keep listening to the changes made under the
     // reference
@@ -50,6 +51,7 @@ class SavedProductsCubit extends Cubit<SavedProductsState> {
     }
   }
 
+  /* Save or Unsave the product based on whether it is already saved or not */
   void toggleSavedProduct(Product product) async {
     try {
       // Check if present then remove
@@ -77,8 +79,33 @@ class SavedProductsCubit extends Cubit<SavedProductsState> {
     }
   }
 
+  /* Get List of saved products as List<Product>, where Product is our Product Modal */
+  Future<List<Product>> getSavedProducts() async {
+    try {
+      // get all user products that map our saved products
+      final List<Product> products = await Future.wait(
+        state.products.values.map((productKey) async {
+          // for each of the saved product get it's details
+          final data = await _currentUserProductsRef.child(productKey).get();
+
+          // parse it
+          final product = Product.fromJson(data.value.toString());
+
+          return product;
+        }),
+      );
+
+      debugPrint(products.toString());
+      return products;
+      // Incase of error
+    } on FirebaseException catch (error) {
+      debugPrint(error.message);
+      return [];
+    }
+  }
+
+  /* Dispose of the Opened Streams */
   void dispose() async {
-    /* Dispose of the opened Streams */
     try {
       await _savedProductsStream.cancel();
 

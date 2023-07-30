@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:oumel/blocs/cubit/saved_products_cubit.dart';
+import 'package:oumel/screens/product_details_screen.dart';
 
 import '../models/product.dart';
 
@@ -21,6 +22,7 @@ class ProductWidget extends StatelessWidget {
     final SavedProductsCubit savedProductsCubit = context.watch<SavedProductsCubit>();
     final savedProducts = savedProductsCubit.state.products;
     final isSaved = savedProducts.values.contains(products[index].pid);
+    final isLandscape = MediaQuery.orientationOf(context) == Orientation.landscape;
 
     return Card(
       elevation: 4,
@@ -40,7 +42,7 @@ class ProductWidget extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               SizedBox(
-                width: 350.w,
+                width: isLandscape ? 160.w : 350.w,
                 child: Text(
                   products[index].name,
                   style: TextStyle(
@@ -83,7 +85,7 @@ class ProductWidget extends StatelessWidget {
                     color: Theme.of(context).colorScheme.secondary,
                   ),
                   SizedBox(
-                    width: 100.w,
+                    width: isLandscape ? 55.w : 100.w,
                     child: Text(
                       products[index].price.toString(),
                       overflow: TextOverflow.ellipsis,
@@ -105,7 +107,7 @@ class ProductWidget extends StatelessWidget {
                     color: Theme.of(context).colorScheme.secondary,
                   ),
                   SizedBox(
-                    width: 180.w,
+                    width: isLandscape ? 90.w : 180.w,
                     child: Text(
                       products[index].location,
                       overflow: TextOverflow.ellipsis,
@@ -121,28 +123,32 @@ class ProductWidget extends StatelessWidget {
             ],
           ),
         ),
-        child: products[index].images != null
-            ? ClipRRect(
-                borderRadius: BorderRadius.circular(32.r),
-                child: Image.network(
-                  products[index].images![0],
-                  fit: BoxFit.cover,
-                ),
-              )
-            : Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.image,
-                    size: 18.spMax,
+        child: GestureDetector(
+          onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (context) => ProductDetailsScreen(products[index]))),
+          child: products[index].images != null
+              ? ClipRRect(
+                  borderRadius: BorderRadius.circular(32.r),
+                  child: Image.network(
+                    products[index].images![0],
+                    fit: BoxFit.cover,
                   ),
-                  Text(
-                    'No images to show',
-                    style: TextStyle(fontSize: 12.spMax),
-                  )
-                ],
-              ),
+                )
+              : Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.image,
+                      size: 18.spMax,
+                    ),
+                    Text(
+                      'No images to show',
+                      style: TextStyle(fontSize: 12.spMax),
+                    )
+                  ],
+                ),
+        ),
       ),
     );
   }

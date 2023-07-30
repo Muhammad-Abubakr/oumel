@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:oumel/blocs/user/user_bloc.dart';
 import 'package:oumel/screens/drawer/categories_screen.dart';
+import 'package:oumel/screens/drawer/saved_products_screen.dart';
 
 class MainDrawer extends StatelessWidget {
   const MainDrawer({
@@ -31,16 +32,16 @@ class MainDrawer extends StatelessWidget {
                     onTap: () => navigator.pushNamed(CategoriesScreen.routeName),
                   ),
                   ListTile(
-                    title: const Text('Purchases', style: TextStyle(color: Colors.white)),
-                    onTap: () => {},
-                  ),
+                      title: const Text('Purchases', style: TextStyle(color: Colors.white)),
+                      onTap: () => {}),
                   ListTile(
                     title: const Text('Messages', style: TextStyle(color: Colors.white)),
                     onTap: () => {},
                   ),
                   ListTile(
                     title: const Text('Saved', style: TextStyle(color: Colors.white)),
-                    onTap: () => {},
+                    onTap: () => navigator.push(
+                        MaterialPageRoute(builder: (context) => const SavedProductsScreen())),
                   ),
                   ListTile(
                     title: const Text('About Us', style: TextStyle(color: Colors.white)),

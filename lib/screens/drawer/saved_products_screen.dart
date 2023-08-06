@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:oumel/blocs/cubit/saved_products_cubit.dart';
+import 'package:oumel/blocs/saved/saved_products_cubit.dart';
+import 'package:oumel/widgets/client_product_widget.dart';
 import 'package:oumel/widgets/custom_app_bar_title.dart';
 
 import '../../models/product.dart';
-import '../../widgets/product_widget.dart';
 
 class SavedProductsScreen extends StatelessWidget {
   const SavedProductsScreen({super.key});
@@ -13,7 +13,6 @@ class SavedProductsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final savedProductsCubit = context.watch<SavedProductsCubit>();
-    final isLandscape = MediaQuery.orientationOf(context) == Orientation.landscape;
 
     return Scaffold(
       appBar: AppBar(
@@ -41,15 +40,11 @@ ${snapshot.error}""",
                 ? const Center(
                     child: Text('Nothing to show!'),
                   )
-                : GridView.builder(
+                : ListView.builder(
                     shrinkWrap: true,
                     padding: EdgeInsets.all(8.0.r),
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: isLandscape ? 4 : 2),
-                    itemBuilder: (context, index) => Padding(
-                      padding: EdgeInsets.all(16.0.r),
-                      child: ProductWidget(products: snapshot.data!, index: index),
-                    ),
+                    itemBuilder: (context, index) =>
+                        ClientProductWidget(snapshot.data![index]),
                     itemCount: snapshot.data!.length,
                   );
           }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:oumel/blocs/userchat/userchat_cubit.dart';
 import 'package:oumel/screens/auth/authentication.dart';
 import 'package:oumel/screens/wrapper/basket_screen.dart';
 import 'package:oumel/screens/wrapper/home_screen.dart';
@@ -7,6 +8,7 @@ import 'package:oumel/screens/wrapper/notifications_screen.dart';
 import 'package:oumel/screens/wrapper/profile_screen.dart';
 import 'package:oumel/screens/wrapper/sell_screen.dart';
 
+import '../../blocs/saved/saved_products_cubit.dart';
 import '../../blocs/user/user_bloc.dart';
 import '../../widgets/main_drawer.dart';
 
@@ -32,6 +34,25 @@ class _WrapperState extends State<Wrapper> {
     SellScreen(),
     ProfileScreen(),
   ];
+
+  @override
+  void initState() {
+    /* Initializations specific to the current User 
+    should be done here */
+    context.read<SavedProductsCubit>().initialize();
+    context.read<UserchatCubit>().intialize();
+
+    super.initState();
+  }
+
+  @override
+  void deactivate() {
+    /* Disposing the Streams opened specific to user */
+    context.read<SavedProductsCubit>().dispose();
+    context.read<UserchatCubit>().dispose();
+
+    super.deactivate();
+  }
 
   @override
   Widget build(BuildContext context) {

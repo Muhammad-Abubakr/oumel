@@ -2,13 +2,13 @@ import 'dart:io';
 
 import 'package:appinio_video_player/appinio_video_player.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 
 class MyVideoPlayer extends StatefulWidget {
-  final XFile _video;
+  final XFile? file;
+  final String? uri;
 
-  const MyVideoPlayer(this._video, {super.key});
+  const MyVideoPlayer(this.file, {this.uri, super.key});
 
   @override
   State<MyVideoPlayer> createState() => _MyVideoPlayerState();
@@ -16,6 +16,7 @@ class MyVideoPlayer extends StatefulWidget {
 
 class _MyVideoPlayerState extends State<MyVideoPlayer> {
   // Initializing controller
+  bool isReady = false;
   late final VideoPlayerController _videoPlayerController;
   late final CustomVideoPlayerController _customVideoPlayerController;
   final CustomVideoPlayerSettings _customVideoPlayerSettings =
@@ -23,8 +24,13 @@ class _MyVideoPlayerState extends State<MyVideoPlayer> {
 
   @override
   void initState() {
-    _videoPlayerController = VideoPlayerController.file(File(widget._video.path))
-      ..initialize().then((value) => setState(() {}));
+    if (widget.file != null) {
+      _videoPlayerController = VideoPlayerController.file(File(widget.file!.path))
+        ..initialize().then((_) => setState(() => isReady = true));
+    } else {
+      _videoPlayerController = VideoPlayerController.network(widget.uri!)
+        ..initialize().then((_) => setState(() => isReady = true));
+    }
 
     _customVideoPlayerController = CustomVideoPlayerController(
       context: context,
@@ -44,11 +50,12 @@ class _MyVideoPlayerState extends State<MyVideoPlayer> {
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(24.r),
-      child: CustomVideoPlayer(
-        customVideoPlayerController: _customVideoPlayerController,
-      ),
-    );
+    return isReady
+        ? CustomVideoPlayer(
+            customVideoPlayerController: _customVideoPlayerController,
+          )
+        : const Center(
+            child: CircularProgressIndicator(),
+          );
   }
 }

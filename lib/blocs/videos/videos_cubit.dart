@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:http/http.dart';
 
 part 'videos_state.dart';
 
@@ -18,6 +19,12 @@ class VideosCubit extends Cubit<VideosState> {
     List<XFile> updatedVideos = [...(state.videos..remove(xFile))];
 
     emit(VideosUpdate(videos: updatedVideos));
+  }
+
+  Future<XFile> getVideo(Uri uri) async {
+    final res = await get(uri);
+
+    return XFile.fromData(res.bodyBytes);
   }
 
   /* Check if no videos */

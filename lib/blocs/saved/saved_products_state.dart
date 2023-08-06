@@ -1,7 +1,7 @@
 part of 'saved_products_cubit.dart';
 
 abstract class SavedProductsState {
-  final Map<String, String> products;
+  final List<SavedProduct> products;
 
   const SavedProductsState(this.products);
 }

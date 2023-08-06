@@ -2,10 +2,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:oumel/blocs/products/products_bloc.dart';
+import 'package:oumel/blocs/wares/wares_cubit.dart';
 import 'package:oumel/models/product.dart';
-
-import '../widgets/product_widget.dart';
+import 'package:oumel/widgets/client_product_widget.dart';
 
 class ProductsScreen extends StatefulWidget {
   const ProductsScreen({super.key, this.category = ProductCategory.none});
@@ -29,10 +28,9 @@ class _ProductsScreenState extends State<ProductsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isLandscape = MediaQuery.orientationOf(context) == Orientation.landscape;
-    final productsBloc = context.read<ProductsBloc>();
-    final List<Product> products = productsBloc.state.products;
-    final filteredProducts = products
+    final waresCubit = context.read<WaresCubit>();
+    final List<Product> wares = waresCubit.state.wares;
+    final filteredWares = wares
         .where((p) => p.category == filterBy || filterBy == ProductCategory.none)
         .toList();
 
@@ -63,20 +61,15 @@ class _ProductsScreenState extends State<ProductsScreen> {
           )
         ],
       ),
-      body: filteredProducts.isEmpty
+      body: filteredWares.isEmpty
           ? const Center(
               child: Text('Nothing to show!'),
             )
-          : GridView.builder(
+          : ListView.builder(
               shrinkWrap: true,
               padding: EdgeInsets.all(8.0.r),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: isLandscape ? 4 : 2),
-              itemBuilder: (context, index) => Padding(
-                padding: EdgeInsets.all(16.0.r),
-                child: ProductWidget(products: filteredProducts, index: index),
-              ),
-              itemCount: filteredProducts.length,
+              itemBuilder: (context, index) => ClientProductWidget(filteredWares[index]),
+              itemCount: filteredWares.length,
             ),
     );
   }

@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:oumel/blocs/user/user_bloc.dart';
 import 'package:oumel/screens/drawer/categories_screen.dart';
+import 'package:oumel/screens/drawer/chats_page.dart';
 import 'package:oumel/screens/drawer/saved_products_screen.dart';
 
 class MainDrawer extends StatelessWidget {
@@ -36,7 +37,9 @@ class MainDrawer extends StatelessWidget {
                       onTap: () => {}),
                   ListTile(
                     title: const Text('Messages', style: TextStyle(color: Colors.white)),
-                    onTap: () => {},
+                    onTap: () => Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => const ChatsPage()),
+                    ),
                   ),
                   ListTile(
                     title: const Text('Saved', style: TextStyle(color: Colors.white)),

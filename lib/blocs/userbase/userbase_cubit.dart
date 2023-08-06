@@ -37,15 +37,14 @@ class UserbaseCubit extends Cubit<UserbaseState> {
           users.add(parsedUser);
         }
       }
-
       /* emit the new state after collection */
       emit(UserbaseUpdate(users));
     });
   }
 
-  /* Check if the user with phone number exists */
-  int phoneNumberExists(String phoneNumber) {
-    return state.userbase.indexWhere((element) => element.phoneNumber == phoneNumber);
+  /* Check if the user with the phone number exists */
+  int phoneNumberExists(String number) {
+    return state.userbase.indexWhere((element) => element.phoneNumber == number);
   }
 
   /* Single User Getter */

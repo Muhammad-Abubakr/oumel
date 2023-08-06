@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:oumel/blocs/cubit/saved_products_cubit.dart';
+import 'package:oumel/blocs/saved/saved_products_cubit.dart';
 import 'package:oumel/screens/product_details_screen.dart';
 
 import '../models/product.dart';
@@ -21,7 +21,8 @@ class ProductWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final SavedProductsCubit savedProductsCubit = context.watch<SavedProductsCubit>();
     final savedProducts = savedProductsCubit.state.products;
-    final isSaved = savedProducts.values.contains(products[index].pid);
+    final isSaved =
+        savedProducts.indexWhere((element) => element.pid == products[index].pid) > -1;
     final isLandscape = MediaQuery.orientationOf(context) == Orientation.landscape;
 
     return Card(

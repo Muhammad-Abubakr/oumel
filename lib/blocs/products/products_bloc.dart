@@ -5,7 +5,6 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
@@ -201,7 +200,6 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
 
   /* Private event Handlers */
   FutureOr<void> _updator(_Update event, Emitter<ProductsState> emit) {
-    debugPrint(event.products.toString());
     emit(ProductsUpdate(products: event.products, status: ProductsStatus.updated));
   }
 }

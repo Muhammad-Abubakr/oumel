@@ -94,7 +94,7 @@ class _ChatsPageState extends State<ChatsPage> {
 
                     return ListTile(
                       onTap: () => Navigator.of(context)
-                          .pushNamed(ChatRoomScreen.routeName, arguments: {
+                          .pushReplacementNamed(ChatRoomScreen.routeName, arguments: {
                         "currentUser": myUID,
                         "itemOwner": otherUser,
                       }),
@@ -116,7 +116,7 @@ class _ChatsPageState extends State<ChatsPage> {
                         overflow: TextOverflow.ellipsis,
                       ),
                       subtitle: Text(
-                        lastMessage.content,
+                        "${lastMessage.sender == myUID ? "You" : "${otherUser.fName} ${otherUser.lName}"}: ${lastMessage.content}",
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),

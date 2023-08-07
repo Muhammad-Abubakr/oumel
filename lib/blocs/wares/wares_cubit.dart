@@ -53,6 +53,11 @@ class WaresCubit extends Cubit<WaresState> {
     });
   }
 
+  /* get a single product based on pid from warehouse */
+  Product getProduct(String pid) {
+    return state.wares.firstWhere((element) => element.pid == pid);
+  }
+
   /* Cancel Streams */
   void dispose() async {
     await _productsStream.cancel();

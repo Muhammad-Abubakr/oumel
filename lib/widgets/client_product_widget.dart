@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:oumel/blocs/basket/basket_cubit.dart';
 import 'package:oumel/screens/product_details_screen.dart';
 
 import '../blocs/saved/saved_products_cubit.dart';
@@ -144,7 +145,7 @@ class ClientProductWidget extends StatelessWidget {
                     ),
                   ),
                   IconButton(
-                    onPressed: () => {},
+                    onPressed: () => context.read<BasketCubit>().addToBasket(_product),
                     icon: const Icon(
                       FontAwesomeIcons.cartShopping,
                     ),

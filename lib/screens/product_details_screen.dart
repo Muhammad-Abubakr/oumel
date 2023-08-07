@@ -11,6 +11,7 @@ import 'package:oumel/models/user.dart';
 import 'package:oumel/screens/products_screen.dart';
 import 'package:oumel/widgets/custom_app_bar_title.dart';
 
+import '../blocs/basket/basket_cubit.dart';
 import '../blocs/saved/saved_products_cubit.dart';
 import '../widgets/images_preview.dart';
 import '../widgets/my_video_player.dart';
@@ -53,6 +54,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
     User productOwner = context.read<UserbaseCubit>().getUser(widget._product.uid);
     final currentUser = context.read<UserBloc>().state.user;
     final SavedProductsCubit savedProductsCubit = context.watch<SavedProductsCubit>();
+    final BasketCubit basketCubit = context.watch<BasketCubit>();
     final savedProducts = savedProductsCubit.state.products;
     final isSaved =
         savedProducts.indexWhere((element) => element.pid == widget._product.pid) > -1;
@@ -91,8 +93,13 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                   padding: EdgeInsets.symmetric(horizontal: 16.w),
                   scrollDirection: Axis.horizontal,
                   separatorBuilder: (context, index) => const VerticalDivider(),
-                  itemBuilder: (context, index) => TextButton(
-                    style: TextButton.styleFrom(padding: EdgeInsets.zero),
+                  itemBuilder: (context, index) => ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                        padding: EdgeInsets.zero,
+                        side: const BorderSide(
+                          width: 1,
+                          style: BorderStyle.solid,
+                        )),
                     onPressed: () => showDialog(
                       context: context,
                       builder: (context) => Dialog.fullscreen(
@@ -100,7 +107,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                         child: MyVideoPlayer(null, uri: widget._product.videos![index]),
                       ),
                     ),
-                    child: Text("Video ${index + 1}"),
+                    child: Text("Video-${index + 1}"),
                   ),
                   itemCount: widget._product.videos!.length,
                 ),
@@ -113,14 +120,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
             /* Store information */
             ListTile(
               leading: CircleAvatar(
-                radius: 96.r,
-                backgroundImage: widget._product.images != null
-                    ? Image.network(productOwner.photoURL).image
-                    : null,
-                child: widget._product.images == null
-                    ? const Icon(Icons.image_not_supported)
-                    : null,
-              ),
+                  radius: 96.r, backgroundImage: Image.network(productOwner.photoURL).image),
               title: Text(
                 '${productOwner.fName} ${productOwner.lName}',
                 style: const TextStyle(
@@ -266,7 +266,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
               ),
             ),
             ElevatedButton.icon(
-              onPressed: () => {},
+              onPressed: () => basketCubit.addToBasket(widget._product),
               icon: Icon(
                 Icons.shopping_cart,
                 size: 28.spMax,

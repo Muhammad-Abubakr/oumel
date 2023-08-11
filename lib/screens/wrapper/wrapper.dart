@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:oumel/blocs/basket/basket_cubit.dart';
 import 'package:oumel/blocs/userchat/userchat_cubit.dart';
 import 'package:oumel/screens/auth/authentication.dart';
 import 'package:oumel/screens/wrapper/basket_screen.dart';
@@ -10,6 +11,8 @@ import 'package:oumel/screens/wrapper/sell_screen.dart';
 
 import '../../blocs/saved/saved_products_cubit.dart';
 import '../../blocs/user/user_bloc.dart';
+import '../../blocs/userbase/userbase_cubit.dart';
+import '../../blocs/wares/wares_cubit.dart';
 import '../../widgets/main_drawer.dart';
 
 class Wrapper extends StatefulWidget {
@@ -108,6 +111,11 @@ class _WrapperState extends State<Wrapper> {
 
             // clear the progress indicator
             Navigator.of(context).pop();
+
+            // disposing streams
+            context.read<UserbaseCubit>().dispose();
+            context.read<WaresCubit>().dispose();
+            context.read<BasketCubit>().dispose();
 
             // navigate
             Navigator.of(context).popAndPushNamed(AuthenticationScreen.routeName);

@@ -8,26 +8,23 @@ import 'order.dart';
 class Purchase extends Equatable {
   final List<Order> products;
   final double totalPrice;
-  final DateTime time;
+  final String customer;
 
   const Purchase({
     required this.products,
     required this.totalPrice,
-    required this.time,
+    required this.customer,
   });
-
-  @override
-  List<Object> get props => [products, totalPrice, time];
 
   Purchase copyWith({
     List<Order>? products,
     double? totalPrice,
-    DateTime? time,
+    String? customer,
   }) {
     return Purchase(
       products: products ?? this.products,
       totalPrice: totalPrice ?? this.totalPrice,
-      time: time ?? this.time,
+      customer: customer ?? this.customer,
     );
   }
 
@@ -35,7 +32,7 @@ class Purchase extends Equatable {
     return <String, dynamic>{
       'products': products.map((x) => x.toMap()).toList(),
       'totalPrice': totalPrice,
-      'time': time.millisecondsSinceEpoch,
+      'customer': customer,
     };
   }
 
@@ -47,7 +44,7 @@ class Purchase extends Equatable {
         ),
       ),
       totalPrice: map['totalPrice'] as double,
-      time: DateTime.fromMillisecondsSinceEpoch(map['time'] as int),
+      customer: map['customer'] as String,
     );
   }
 
@@ -58,4 +55,7 @@ class Purchase extends Equatable {
 
   @override
   bool get stringify => true;
+
+  @override
+  List<Object> get props => [products, totalPrice, customer];
 }

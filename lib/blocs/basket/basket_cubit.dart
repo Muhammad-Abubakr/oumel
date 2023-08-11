@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:bloc/bloc.dart';
-import 'package:equatable/equatable.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:oumel/models/order.dart';
 import 'package:oumel/models/purchase.dart';
 
@@ -8,7 +11,26 @@ import '../../models/product.dart';
 part 'basket_state.dart';
 
 class BasketCubit extends Cubit<BasketState> {
-  BasketCubit() : super(const BasketInitial(null));
+  late StreamSubscription _userStream;
+  User? _currentUser;
+
+  BasketCubit() : super(const BasketInitial());
+
+  /* Cubit initialization */
+  void initialize() {
+    // initialize user stream
+    _userStream = FirebaseAuth.instance.authStateChanges().listen((user) {
+      _currentUser = user;
+    });
+  }
+
+  /* Dispose */
+  void dispose() {
+    // cancel streams
+    _userStream.cancel();
+    // reset state
+    emit(const BasketUpdate());
+  }
 
   /* Calculates new total for the given list of products */
   double getTotal(List<Order> products) {
@@ -42,11 +64,13 @@ class BasketCubit extends Cubit<BasketState> {
       Purchase newPurchase = Purchase(
         products: orders,
         totalPrice: getTotal(orders),
-        time: DateTime.now(),
+        customer: _currentUser!.uid,
       );
 
       // emit the new purchase
-      emit(BasketUpdate(newPurchase));
+      emit(BasketUpdate(
+        purchase: newPurchase,
+      ));
 
       /* If we reach here that means that purchase was already initialized */
     } else {
@@ -74,10 +98,14 @@ class BasketCubit extends Cubit<BasketState> {
 
       double updatedTotal = getTotal(updatedOrders);
 
-      Purchase updatedPurchase =
-          state.purchase!.copyWith(products: updatedOrders, totalPrice: updatedTotal);
+      Purchase updatedPurchase = state.purchase!.copyWith(
+        products: updatedOrders,
+        totalPrice: updatedTotal,
+      );
 
-      emit(BasketUpdate(updatedPurchase));
+      emit(BasketUpdate(
+        purchase: updatedPurchase,
+      ));
     }
   }
 
@@ -85,12 +113,19 @@ class BasketCubit extends Cubit<BasketState> {
   void removeFromBasket(String pid) {
     state.purchase!.products.removeWhere((o) => o.pid == pid);
 
-    Purchase updatedState = state.purchase!.copyWith(
-      products: [...state.purchase!.products],
-      totalPrice: getTotal(state.purchase!.products),
-    );
-
-    emit(BasketUpdate(updatedState));
+    if (state.purchase!.products.isEmpty) {
+      emit(const BasketUpdate(
+        purchase: null,
+      ));
+    } else {
+      Purchase updatedState = state.purchase!.copyWith(
+        products: [...state.purchase!.products],
+        totalPrice: getTotal(state.purchase!.products),
+      );
+      emit(BasketUpdate(
+        purchase: updatedState,
+      ));
+    }
   }
 
   void decreaseQuantity(String pid) {
@@ -114,7 +149,55 @@ class BasketCubit extends Cubit<BasketState> {
         totalPrice: getTotal(state.purchase!.products),
       );
 
-      emit(BasketUpdate(updatedState));
+      emit(BasketUpdate(
+        purchase: updatedState,
+      ));
+    }
+  }
+
+  void placeOrder() async {
+    emit(BasketUpdate(
+      status: BasketStatus.processing,
+      purchase: state.purchase,
+    ));
+
+    try {
+      if (state.purchase != null) {
+        for (var product in state.purchase!.products) {
+          final requestsRef = FirebaseDatabase.instance.ref("requests");
+          var ownersRef = requestsRef.child(product.uid);
+          var customerRef = ownersRef.child(_currentUser!.uid);
+
+          final newRequestRef = customerRef.push();
+          await newRequestRef.set({
+            "product": product.toJson(),
+            "time": DateTime.now().millisecondsSinceEpoch,
+            "req_ref": newRequestRef.key,
+          });
+
+          final purchasesRef = FirebaseDatabase.instance.ref("purchases");
+          customerRef = purchasesRef.child(_currentUser!.uid);
+          ownersRef = customerRef.child(product.uid);
+
+          final newPurchaseRef = ownersRef.push();
+          await newPurchaseRef.set({
+            "product": product.toJson(),
+            "time": DateTime.now().millisecondsSinceEpoch,
+            "pur_ref": newPurchaseRef.key,
+          });
+        }
+
+        emit(const BasketUpdate(
+          status: BasketStatus.orderPlaced,
+          purchase: null,
+        ));
+      }
+    } on FirebaseException catch (e) {
+      emit(BasketUpdate(
+        status: BasketStatus.error,
+        exception: e,
+        purchase: state.purchase,
+      ));
     }
   }
 }

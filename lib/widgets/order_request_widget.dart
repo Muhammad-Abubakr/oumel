@@ -3,38 +3,65 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:oumel/blocs/basket/basket_cubit.dart';
+import 'package:oumel/blocs/requests/requests_cubit.dart';
+import 'package:oumel/blocs/userbase/userbase_cubit.dart';
 import 'package:oumel/blocs/wares/wares_cubit.dart';
 import 'package:oumel/models/order.dart';
 import 'package:oumel/models/product.dart';
+import 'package:oumel/models/user.dart';
 import '../models/purchase.dart';
+import '../screens/drawer/chat_room_screen.dart';
 import '../screens/product_details_screen.dart';
 import '../utils/globals.dart';
 
-class PurchasedProductWidget extends StatelessWidget {
-  const PurchasedProductWidget(this._purchase, {super.key});
+class OrderRequestWidget extends StatelessWidget {
+  const OrderRequestWidget(this._purchase, {super.key});
   final Purchase _purchase;
 
   @override
   Widget build(BuildContext context) {
+    UserbaseCubit userbase = context.read<UserbaseCubit>();
     WaresCubit waresCubit = context.read<WaresCubit>();
-    BasketCubit basketCubit = context.read<BasketCubit>();
+    RequestsCubit requestsCubit = context.read<RequestsCubit>();
     Product product = waresCubit.getProduct(_purchase.order.pid);
+    User customer = userbase.getUser(_purchase.custId);
+    User currentUser = userbase.getUser(product.uid);
 
-    return Container(
-      decoration: ShapeDecoration(
-        color: Theme.of(context).colorScheme.secondary,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(48.r),
-          side: BorderSide(
-            color: Theme.of(context).colorScheme.secondary,
-            width: 1,
-            style: BorderStyle.solid,
-          ),
-        ),
-      ),
+    return Card(
+      elevation: 4,
       child: Column(
         children: [
+          /* Customer Information */
+          ListTile(
+            textColor: Theme.of(context).colorScheme.secondary,
+            iconColor: Theme.of(context).colorScheme.onPrimary,
+            leading: CircleAvatar(
+                radius: 96.r, backgroundImage: Image.network(customer.photoURL).image),
+            title: Text(
+              '${customer.fName} ${customer.lName}',
+              style: TextStyle(
+                fontSize: 14.spMax,
+              ),
+            ),
+            subtitle: Text(
+              customer.phoneNumber,
+              overflow: TextOverflow.ellipsis,
+            ),
+            trailing: IconButton.filled(
+              onPressed: () {
+                Navigator.of(context).pushNamed(ChatRoomScreen.routeName, arguments: {
+                  "currentUser": currentUser.uid,
+                  "itemOwner": customer,
+                });
+              },
+              icon: const Icon(Icons.message),
+            ),
+          ),
+
+          /* Divider */
+          const Divider(),
+
+          /* Product Info */
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 8.spMax, vertical: 10.spMax),
             child: SizedBox(
@@ -75,7 +102,7 @@ class PurchasedProductWidget extends StatelessWidget {
                             fontSize: 14.spMax,
                             fontWeight: FontWeight.bold,
                             overflow: TextOverflow.ellipsis,
-                            color: Theme.of(context).colorScheme.onSecondary,
+                            color: Theme.of(context).colorScheme.secondary,
                           ),
                         ),
                         Text(
@@ -83,7 +110,7 @@ class PurchasedProductWidget extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 14.spMax,
                             overflow: TextOverflow.ellipsis,
-                            color: Theme.of(context).colorScheme.onSecondary,
+                            color: Theme.of(context).colorScheme.secondary,
                           ),
                         ),
                         Text(
@@ -91,7 +118,7 @@ class PurchasedProductWidget extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 14.spMax,
                             overflow: TextOverflow.ellipsis,
-                            color: Theme.of(context).colorScheme.onSecondary,
+                            color: Theme.of(context).colorScheme.secondary,
                           ),
                         ),
                         Row(
@@ -99,7 +126,7 @@ class PurchasedProductWidget extends StatelessWidget {
                           children: [
                             Icon(
                               FontAwesomeIcons.moneyBill,
-                              color: Theme.of(context).colorScheme.onSecondary,
+                              color: Theme.of(context).colorScheme.secondary,
                               size: 16.spMax,
                             ),
                             SizedBox(width: 10.spMax),
@@ -108,7 +135,7 @@ class PurchasedProductWidget extends StatelessWidget {
                               style: TextStyle(
                                 overflow: TextOverflow.ellipsis,
                                 fontSize: 14.spMax,
-                                color: Theme.of(context).colorScheme.onSecondary,
+                                color: Theme.of(context).colorScheme.secondary,
                               ),
                             ),
                           ],
@@ -122,7 +149,7 @@ class PurchasedProductWidget extends StatelessWidget {
                       _purchase.formattedTimeString(),
                       style: TextStyle(
                         fontSize: 12.spMax,
-                        color: Theme.of(context).colorScheme.onSecondary,
+                        color: Theme.of(context).colorScheme.secondary,
                       ),
                     ),
                   ),
@@ -132,37 +159,35 @@ class PurchasedProductWidget extends StatelessWidget {
           ),
 
           /* Bottom Action Buttons */
-          Padding(
-            padding: EdgeInsets.only(
-              left: 8.spMax,
-              right: 4.spMax,
-              bottom: 4.spMax,
-            ),
-            child: Row(
-              mainAxisAlignment: _purchase.order.status == OrderStatus.accepted
-                  ? MainAxisAlignment.spaceAround
-                  : MainAxisAlignment.start,
-              children: [
-                ElevatedButton(
-                  onPressed: () => basketCubit.addToBasket(product),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: ButtonTheme.of(context).colorScheme?.primary,
-                    foregroundColor: ButtonTheme.of(context).colorScheme?.onPrimary,
-                  ),
-                  child: const Text("Buy again"),
-                ),
-                if (_purchase.order.status == OrderStatus.accepted)
+          if (_purchase.order.status == OrderStatus.pending)
+            Padding(
+              padding: EdgeInsets.only(
+                left: 4.spMax,
+                right: 4.spMax,
+                bottom: 4.spMax,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
                   ElevatedButton(
-                    onPressed: () => {},
+                    onPressed: () => requestsCubit.acceptRequest(_purchase, product),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: ButtonTheme.of(context).colorScheme?.primary,
                       foregroundColor: ButtonTheme.of(context).colorScheme?.onPrimary,
                     ),
-                    child: const Text("Feedback"),
+                    child: const Text("Accept"),
                   ),
-              ],
-            ),
-          )
+                  ElevatedButton(
+                    onPressed: () => requestsCubit.denyRequest(_purchase),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: ButtonTheme.of(context).colorScheme?.primary,
+                      foregroundColor: ButtonTheme.of(context).colorScheme?.onPrimary,
+                    ),
+                    child: const Text("Deny"),
+                  ),
+                ],
+              ),
+            )
         ],
       ),
     );

@@ -7,26 +7,30 @@ import 'order.dart';
 
 class Purchase extends Equatable {
   final Order order;
-  final String refId;
+  final String reqRef;
+  final String purRef;
   final String custId;
   final DateTime time;
 
   const Purchase({
     required this.order,
-    required this.refId,
+    required this.reqRef,
+    required this.purRef,
     required this.custId,
     required this.time,
   });
 
   Purchase copyWith({
     Order? order,
-    String? refId,
+    String? reqRef,
+    String? purRef,
     String? custId,
     DateTime? time,
   }) {
     return Purchase(
       order: order ?? this.order,
-      refId: refId ?? this.refId,
+      reqRef: reqRef ?? this.reqRef,
+      purRef: purRef ?? this.purRef,
       custId: custId ?? this.custId,
       time: time ?? this.time,
     );
@@ -35,7 +39,8 @@ class Purchase extends Equatable {
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'order': order.toMap(),
-      'refId': refId,
+      'reqRef': reqRef,
+      'purRef': purRef,
       'custId': custId,
       'time': time.millisecondsSinceEpoch,
     };
@@ -44,7 +49,8 @@ class Purchase extends Equatable {
   factory Purchase.fromMap(Map<String, dynamic> map) {
     return Purchase(
       order: Order.fromMap(map['order'] as Map<String, dynamic>),
-      refId: map['refId'] as String,
+      reqRef: map['reqRef'] as String,
+      purRef: map['purRef'] as String,
       custId: map['custId'] as String,
       time: DateTime.fromMillisecondsSinceEpoch(map['time'] as int),
     );
@@ -68,5 +74,13 @@ class Purchase extends Equatable {
   bool get stringify => true;
 
   @override
-  List<Object> get props => [order, refId, custId, time];
+  List<Object> get props {
+    return [
+      order,
+      reqRef,
+      purRef,
+      custId,
+      time,
+    ];
+  }
 }

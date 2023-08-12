@@ -5,6 +5,8 @@ import 'package:oumel/blocs/basket/basket_cubit.dart';
 import 'package:oumel/models/cart_order.dart';
 import 'package:oumel/widgets/cart_product_widget.dart';
 
+import '../../utils/globals.dart';
+
 class BasketScreen extends StatelessWidget {
   const BasketScreen({super.key});
 
@@ -89,7 +91,7 @@ class BasketScreen extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        purchase.totalPrice.toStringAsFixed(2),
+                        cf.format(purchase.totalPrice),
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16.spMax,

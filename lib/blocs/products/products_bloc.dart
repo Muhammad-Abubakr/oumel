@@ -198,6 +198,11 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
     }
   }
 
+  /* get a single product based on pid from warehouse */
+  Product getProduct(String pid) {
+    return state.products.firstWhere((element) => element.pid == pid);
+  }
+
   /* Private event Handlers */
   FutureOr<void> _updator(_Update event, Emitter<ProductsState> emit) {
     emit(ProductsUpdate(products: event.products, status: ProductsStatus.updated));

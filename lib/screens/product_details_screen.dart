@@ -1,67 +1,38 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:oumel/blocs/user/user_bloc.dart';
-import 'package:oumel/blocs/userbase/userbase_cubit.dart';
-import 'package:oumel/models/product.dart';
-import 'package:oumel/models/user.dart';
-import 'package:oumel/screens/products_screen.dart';
-import 'package:oumel/widgets/custom_app_bar_title.dart';
 
+import '../blocs/user/user_bloc.dart';
+import '../blocs/userbase/userbase_cubit.dart';
+import '../models/product.dart';
+import '../models/user.dart';
+import '../screens/products_screen.dart';
+import '../utils/globals.dart';
+import '../widgets/custom_app_bar_title.dart';
 import '../blocs/basket/basket_cubit.dart';
 import '../blocs/saved/saved_products_cubit.dart';
 import '../widgets/images_preview.dart';
 import '../widgets/my_video_player.dart';
 import 'drawer/chat_room_screen.dart';
 
-class ProductDetailsScreen extends StatefulWidget {
+class ProductDetailsScreen extends StatelessWidget {
   const ProductDetailsScreen(this._product, {super.key});
-
   final Product _product;
 
   @override
-  State<ProductDetailsScreen> createState() => _ProductDetailsScreenState();
-}
-
-class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
-  @override
-  void initState() {
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
-    ]);
-
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.landscapeLeft,
-      DeviceOrientation.landscapeRight,
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
-    ]);
-
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    User productOwner = context.read<UserbaseCubit>().getUser(widget._product.uid);
+    User productOwner = context.read<UserbaseCubit>().getUser(_product.uid);
     final currentUser = context.read<UserBloc>().state.user;
     final SavedProductsCubit savedProductsCubit = context.watch<SavedProductsCubit>();
     final BasketCubit basketCubit = context.watch<BasketCubit>();
     final savedProducts = savedProductsCubit.state.products;
-    final isSaved =
-        savedProducts.indexWhere((element) => element.pid == widget._product.pid) > -1;
+    final isSaved = savedProducts.indexWhere((element) => element.pid == _product.pid) > -1;
 
     return Scaffold(
       appBar: AppBar(
-        title: CustomAppBarTitle(title: widget._product.name),
+        title: CustomAppBarTitle(title: _product.name),
         actions: [
           IconButton(
               onPressed: () =>
@@ -78,15 +49,32 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             /* Product images Preview */
-            Padding(
-              padding: EdgeInsets.only(bottom: 30.h),
-              child: widget._product.images == null
-                  ? const Text("No images to show*")
-                  : ImagesPreview(images: widget._product.images!),
+            if (_product.images == null) ...[
+              SizedBox(
+                height: 24.h,
+              ),
+              Icon(
+                Icons.image_not_supported_rounded,
+                color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                size: 64.spMax,
+              ),
+              Text(
+                "No images present for preview",
+                style: TextStyle(
+                  color: Colors.grey,
+                  fontSize: 12.spMax,
+                ),
+              ),
+            ],
+            if (_product.images != null) ImagesPreview(images: _product.images!),
+
+            /* Spacing */
+            SizedBox(
+              height: 36.h,
             ),
 
             /* Videos */
-            if (widget._product.videos != null) ...[
+            if (_product.videos != null) ...[
               SizedBox(
                 height: 64.h,
                 child: ListView.separated(
@@ -104,12 +92,12 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                       context: context,
                       builder: (context) => Dialog.fullscreen(
                         backgroundColor: Colors.black38,
-                        child: MyVideoPlayer(null, uri: widget._product.videos![index]),
+                        child: MyVideoPlayer(null, uri: _product.videos![index]),
                       ),
                     ),
                     child: Text("Video-${index + 1}"),
                   ),
-                  itemCount: widget._product.videos!.length,
+                  itemCount: _product.videos!.length,
                 ),
               ),
 
@@ -143,7 +131,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 8.spMax),
               child: Text(
-                widget._product.name,
+                _product.name,
                 textAlign: TextAlign.left,
                 maxLines: 2,
                 style: TextStyle(
@@ -168,30 +156,24 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                     onPressed: () => Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (context) => ProductsScreen(
-                          category: widget._product.category,
+                          category: _product.category,
                         ),
                       ),
                     ),
                     icon: const Icon(Icons.category_rounded),
                     label: Text(
-                      describeEnum(widget._product.category)[0].toUpperCase() +
-                          describeEnum(widget._product.category).substring(1),
+                      describeEnum(_product.category)[0].toUpperCase() +
+                          describeEnum(_product.category).substring(1),
                     ),
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      const Icon(Icons.attach_money),
-                      Text(
-                        widget._product.price.toStringAsFixed(2),
-                        maxLines: 2,
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.primary,
-                          fontSize: 18.spMax,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
+                  Text(
+                    "Price: ${cf.format(_product.price)}",
+                    maxLines: 2,
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.primary,
+                      fontSize: 16.spMax,
+                      fontWeight: FontWeight.w500,
+                    ),
                   )
                 ],
               ),
@@ -203,10 +185,9 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
             ),
 
             /* Add-ons showcase */
-            _buildAddOnChip(context, widget._product.model, prefix: "Modal(s) : "),
-            _buildAddOnChip(context, widget._product.color, prefix: "Color(s) : "),
-            _buildAddOnChip(context, widget._product.quantity.toString(),
-                prefix: "Quantity : "),
+            _buildAddOnChip(context, _product.model, prefix: "Modal(s) : "),
+            _buildAddOnChip(context, _product.color, prefix: "Color(s) : "),
+            _buildAddOnChip(context, _product.quantity.toString(), prefix: "Quantity : "),
 
             /* Separator */
             Divider(height: 128.h),
@@ -231,10 +212,10 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
             /* Details Table */
             Table(
               children: [
-                _buildTableRow("Condition", widget._product.condition),
-                _buildTableRow("Location", widget._product.location),
-                _buildTableRow("Color", widget._product.color),
-                _buildTableRow("Description", widget._product.description),
+                _buildTableRow("Condition", _product.condition),
+                _buildTableRow("Location", _product.location),
+                _buildTableRow("Color", _product.color),
+                _buildTableRow("Description", _product.description),
               ],
             ),
 
@@ -245,7 +226,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
 
             /* Actions */
             ElevatedButton.icon(
-              onPressed: () => savedProductsCubit.toggleSavedProduct(widget._product),
+              onPressed: () => savedProductsCubit.toggleSavedProduct(_product),
               icon: Icon(
                 isSaved ? FontAwesomeIcons.solidBookmark : FontAwesomeIcons.bookmark,
               ),
@@ -254,24 +235,26 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                 fixedSize: Size.fromWidth(0.7.sw),
               ),
             ),
-            ElevatedButton.icon(
-              onPressed: () => {},
-              icon: Icon(
-                Icons.money,
-                size: 28.spMax,
+            if (_product.quantity > 0)
+              ElevatedButton.icon(
+                onPressed: () => {},
+                icon: Icon(
+                  Icons.money,
+                  size: 28.spMax,
+                ),
+                label: const Text("Buy"),
+                style: ElevatedButton.styleFrom(
+                  fixedSize: Size.fromWidth(0.7.sw),
+                ),
               ),
-              label: const Text("Buy"),
-              style: ElevatedButton.styleFrom(
-                fixedSize: Size.fromWidth(0.7.sw),
-              ),
-            ),
             ElevatedButton.icon(
-              onPressed: () => basketCubit.addToBasket(widget._product),
+              onPressed:
+                  _product.quantity <= 0 ? null : () => basketCubit.addToBasket(_product),
               icon: Icon(
                 Icons.shopping_cart,
                 size: 28.spMax,
               ),
-              label: const Text("Add to Cart"),
+              label: Text(_product.quantity <= 0 ? "Out of stock" : "Add to Cart"),
               style: ElevatedButton.styleFrom(
                 fixedSize: Size.fromWidth(0.7.sw),
               ),

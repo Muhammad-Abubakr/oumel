@@ -15,12 +15,17 @@ class PurchaseHistoryScreen extends StatelessWidget {
         title: const CustomAppBarTitle(title: "Purchases"),
       ),
       body: BlocBuilder<PurchasesCubit, PurchasesState>(
-        builder: (context, state) => ListView.separated(
-          padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 36.h),
-          separatorBuilder: (context, index) => const Divider(),
-          itemBuilder: (context, index) => PurchasedProductWidget(state.purchases[index]),
-          itemCount: state.purchases.length,
-        ),
+        builder: (context, state) => state.purchases.isEmpty
+            ? const Center(
+                child: Text("Nothing here for now."),
+              )
+            : ListView.separated(
+                padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 36.h),
+                separatorBuilder: (context, index) => const Divider(),
+                itemBuilder: (context, index) =>
+                    PurchasedProductWidget(state.purchases[index]),
+                itemCount: state.purchases.length,
+              ),
       ),
     );
   }

@@ -167,25 +167,22 @@ class BasketCubit extends Cubit<BasketState> {
         for (var product in state.purchase!.products) {
           /* Requests collection for the owner */
           final requestsRef = FirebaseDatabase.instance.ref("requests");
-          var ownersRef = requestsRef.child(product.uid);
+          final purchasesRef = FirebaseDatabase.instance.ref("purchases");
+          final ownersRef = requestsRef.child(product.uid);
+          final customerRef = purchasesRef.child(_currentUser!.uid);
 
+          final newPurchaseRef = customerRef.push();
           final newRequestRef = ownersRef.push();
+
           Purchase purchase = Purchase(
             order: product,
-            refId: newRequestRef.key!,
+            reqRef: newRequestRef.key!,
+            purRef: newPurchaseRef.key!,
             custId: _currentUser!.uid,
             time: DateTime.now(),
           );
 
           await newRequestRef.set(purchase.toJson());
-
-          /* Now for the purchases collection for the customer */
-          final purchasesRef = FirebaseDatabase.instance.ref("purchases");
-          final customerRef = purchasesRef.child(_currentUser!.uid);
-
-          final newPurchaseRef = customerRef.push();
-          purchase = purchase.copyWith(refId: newPurchaseRef.key);
-
           await newPurchaseRef.set(purchase.toJson());
         }
 

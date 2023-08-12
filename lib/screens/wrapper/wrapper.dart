@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:oumel/blocs/basket/basket_cubit.dart';
 import 'package:oumel/blocs/purchases/purchases_cubit.dart';
+import 'package:oumel/blocs/requests/requests_cubit.dart';
 import 'package:oumel/blocs/userchat/userchat_cubit.dart';
 import 'package:oumel/screens/splash_screen.dart';
 import 'package:oumel/screens/wrapper/basket_screen.dart';
@@ -47,6 +48,7 @@ class _WrapperState extends State<Wrapper> {
     context.read<UserchatCubit>().intialize();
     context.read<BasketCubit>().initialize();
     context.read<PurchasesCubit>().initialize();
+    context.read<RequestsCubit>().initialize();
 
     super.initState();
   }
@@ -58,6 +60,7 @@ class _WrapperState extends State<Wrapper> {
     context.read<UserchatCubit>().dispose();
     context.read<BasketCubit>().dispose();
     context.read<PurchasesCubit>().dispose();
+    context.read<RequestsCubit>().dispose();
 
     super.deactivate();
   }
@@ -75,13 +78,11 @@ class _WrapperState extends State<Wrapper> {
             ScaffoldMessenger.of(context).clearSnackBars();
 
             // Then show New
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content: const Text('Updation Successful'),
-              action: SnackBarAction(
-                label: 'Great',
-                onPressed: () => ScaffoldMessenger.of(context).removeCurrentSnackBar(),
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Updation Successful'),
               ),
-            ));
+            );
             break;
           case UserStates.error:
             // First Clear the State for snackbars
@@ -90,10 +91,6 @@ class _WrapperState extends State<Wrapper> {
             // Then show New
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
               content: Text('${state.error?.message}'),
-              action: SnackBarAction(
-                label: 'Dismiss',
-                onPressed: () => ScaffoldMessenger.of(context).removeCurrentSnackBar(),
-              ),
             ));
             break;
           /* Processing Indicator */

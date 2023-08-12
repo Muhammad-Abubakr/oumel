@@ -9,6 +9,7 @@ import 'package:oumel/screens/product_details_screen.dart';
 
 import '../blocs/saved/saved_products_cubit.dart';
 import '../models/product.dart';
+import '../utils/globals.dart';
 
 class ClientProductWidget extends StatelessWidget {
   const ClientProductWidget(this._product, {super.key});
@@ -115,7 +116,7 @@ class ClientProductWidget extends StatelessWidget {
                                   ),
                                   SizedBox(width: 10.spMax),
                                   Text(
-                                    _product.price.toStringAsFixed(2),
+                                    cf.format(_product.price),
                                     style: TextStyle(
                                       overflow: TextOverflow.ellipsis,
                                       fontSize: 14.spMax,
@@ -146,7 +147,9 @@ class ClientProductWidget extends StatelessWidget {
                     ),
                   ),
                   IconButton(
-                    onPressed: () => context.read<BasketCubit>().addToBasket(_product),
+                    onPressed: _product.quantity <= 0
+                        ? null
+                        : () => context.read<BasketCubit>().addToBasket(_product),
                     icon: const Icon(
                       FontAwesomeIcons.cartShopping,
                     ),

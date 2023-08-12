@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:oumel/blocs/basket/basket_cubit.dart';
 import 'package:oumel/blocs/chat/chat_bloc.dart';
 import 'package:oumel/blocs/purchases/purchases_cubit.dart';
+import 'package:oumel/blocs/requests/requests_cubit.dart';
 import 'package:oumel/blocs/saved/saved_products_cubit.dart';
 import 'package:oumel/blocs/database_user/database_user_cubit.dart';
 import 'package:oumel/blocs/images/images_cubit.dart';
@@ -49,6 +50,8 @@ class App extends StatelessWidget {
         BlocProvider<UserchatCubit>(create: (context) => UserchatCubit()),
         BlocProvider<BasketCubit>(create: (context) => BasketCubit()),
         BlocProvider<PurchasesCubit>(create: (context) => PurchasesCubit()),
+        BlocProvider<RequestsCubit>(
+            create: (context) => RequestsCubit(context.read<PurchasesCubit>())),
       ],
       child: ScreenUtilInit(
         designSize: const Size(1080, 2340),

@@ -9,6 +9,7 @@ import 'package:oumel/blocs/wares/wares_cubit.dart';
 import 'package:oumel/models/product.dart';
 import '../models/order.dart';
 import '../screens/product_details_screen.dart';
+import '../utils/globals.dart';
 
 class CartProductWidget extends StatelessWidget {
   const CartProductWidget(this._order, {super.key});
@@ -16,7 +17,7 @@ class CartProductWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    WaresCubit waresCubit = context.watch<WaresCubit>();
+    WaresCubit waresCubit = context.read<WaresCubit>();
     BasketCubit basketCubit = context.watch<BasketCubit>();
     Product product = waresCubit.getProduct(_order.pid);
 
@@ -105,7 +106,7 @@ class CartProductWidget extends StatelessWidget {
                                 ),
                                 SizedBox(width: 10.spMax),
                                 Text(
-                                  _order.price.toStringAsFixed(2),
+                                  cf.format(_order.price),
                                   style: TextStyle(
                                     overflow: TextOverflow.ellipsis,
                                     fontSize: 14.spMax,

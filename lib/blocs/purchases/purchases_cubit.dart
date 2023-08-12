@@ -3,6 +3,9 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:oumel/models/order.dart';
 import 'package:oumel/services/firebase/auth.dart';
 
 import '../../models/purchase.dart';
@@ -45,6 +48,43 @@ class PurchasesCubit extends Cubit<PurchasesState> {
         });
       }
     });
+  }
+
+  /* Reactors (Order Accepted or Denied) */
+  void orderAccepted(Purchase purchase) async {
+    /* Obtaining the reference to the Purchase */
+    final DatabaseReference purchaseRef =
+        _purchasesRef.child("${purchase.custId}/${purchase.purRef}");
+
+    /* Updated Purchase */
+    final Purchase updated =
+        purchase.copyWith(order: purchase.order.copyWith(status: OrderStatus.accepted));
+
+    try {
+      await purchaseRef.set(updated.toJson());
+
+      /* Incase of Error */
+    } on FirebaseException catch (e) {
+      debugPrint(e.message);
+    }
+  }
+
+  void orderDenied(Purchase purchase) async {
+    /* Obtaining the reference to the Purchase */
+    final DatabaseReference purchaseRef =
+        _purchasesRef.child("${purchase.custId}/${purchase.purRef}");
+
+    /* Updated Purchase */
+    final Purchase updated =
+        purchase.copyWith(order: purchase.order.copyWith(status: OrderStatus.denied));
+
+    try {
+      await purchaseRef.set(updated.toJson());
+
+      /* Incase of Error */
+    } on FirebaseException catch (e) {
+      debugPrint(e.message);
+    }
   }
 
   //  disposer

@@ -5,6 +5,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:oumel/blocs/user/user_bloc.dart';
 import 'package:oumel/screens/drawer/categories_screen.dart';
 import 'package:oumel/screens/drawer/chats_page.dart';
+import 'package:oumel/screens/drawer/order_requests_screen.dart';
 import 'package:oumel/screens/drawer/purchase_history_screen.dart';
 import 'package:oumel/screens/drawer/saved_products_screen.dart';
 
@@ -37,6 +38,10 @@ class MainDrawer extends StatelessWidget {
                       title: const Text('Purchases', style: TextStyle(color: Colors.white)),
                       onTap: () => Navigator.of(context).push(MaterialPageRoute(
                           builder: (context) => const PurchaseHistoryScreen()))),
+                  ListTile(
+                      title: const Text('Requests', style: TextStyle(color: Colors.white)),
+                      onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => const OrderRequestsScreen()))),
                   ListTile(
                     title: const Text('Messages', style: TextStyle(color: Colors.white)),
                     onTap: () => Navigator.of(context).push(

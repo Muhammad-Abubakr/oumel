@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:oumel/blocs/basket/basket_cubit.dart';
+import 'package:oumel/blocs/purchases/purchases_cubit.dart';
 import 'package:oumel/blocs/userchat/userchat_cubit.dart';
-import 'package:oumel/screens/auth/authentication.dart';
+import 'package:oumel/screens/splash_screen.dart';
 import 'package:oumel/screens/wrapper/basket_screen.dart';
 import 'package:oumel/screens/wrapper/home_screen.dart';
 import 'package:oumel/screens/wrapper/notifications_screen.dart';
@@ -44,6 +45,8 @@ class _WrapperState extends State<Wrapper> {
     should be done here */
     context.read<SavedProductsCubit>().initialize();
     context.read<UserchatCubit>().intialize();
+    context.read<BasketCubit>().initialize();
+    context.read<PurchasesCubit>().initialize();
 
     super.initState();
   }
@@ -53,6 +56,8 @@ class _WrapperState extends State<Wrapper> {
     /* Disposing the Streams opened specific to user */
     context.read<SavedProductsCubit>().dispose();
     context.read<UserchatCubit>().dispose();
+    context.read<BasketCubit>().dispose();
+    context.read<PurchasesCubit>().dispose();
 
     super.deactivate();
   }
@@ -115,10 +120,10 @@ class _WrapperState extends State<Wrapper> {
             // disposing streams
             context.read<UserbaseCubit>().dispose();
             context.read<WaresCubit>().dispose();
-            context.read<BasketCubit>().dispose();
 
             // navigate
-            Navigator.of(context).popAndPushNamed(AuthenticationScreen.routeName);
+            Navigator.of(context)
+                .pushNamedAndRemoveUntil(SplashScreen.routeName, (_) => false);
             break;
           default:
             break;

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:oumel/blocs/basket/basket_cubit.dart';
 import 'package:oumel/blocs/chat/chat_bloc.dart';
+import 'package:oumel/blocs/purchases/purchases_cubit.dart';
 import 'package:oumel/blocs/saved/saved_products_cubit.dart';
 import 'package:oumel/blocs/database_user/database_user_cubit.dart';
 import 'package:oumel/blocs/images/images_cubit.dart';
@@ -26,6 +28,12 @@ class App extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    /* Preferred Orientations */
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+
     return MultiBlocProvider(
       providers: [
         BlocProvider<UserBloc>(create: (context) => UserBloc()),
@@ -40,6 +48,7 @@ class App extends StatelessWidget {
         BlocProvider<ChatBloc>(create: (context) => ChatBloc()),
         BlocProvider<UserchatCubit>(create: (context) => UserchatCubit()),
         BlocProvider<BasketCubit>(create: (context) => BasketCubit()),
+        BlocProvider<PurchasesCubit>(create: (context) => PurchasesCubit()),
       ],
       child: ScreenUtilInit(
         designSize: const Size(1080, 2340),

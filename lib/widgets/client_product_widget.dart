@@ -86,7 +86,7 @@ class ClientProductWidget extends StatelessWidget {
                                 _product.name,
                                 overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
-                                  fontSize: 16.spMax,
+                                  fontSize: 14.spMax,
                                   fontWeight: FontWeight.bold,
                                   color: Theme.of(context).colorScheme.onSecondary,
                                 ),
@@ -110,6 +110,7 @@ class ClientProductWidget extends StatelessWidget {
                                 children: [
                                   Icon(
                                     FontAwesomeIcons.moneyBill,
+                                    size: 16.spMax,
                                     color: Theme.of(context).colorScheme.onSecondary,
                                   ),
                                   SizedBox(width: 10.spMax),

@@ -79,7 +79,7 @@ class CartProductWidget extends StatelessWidget {
                       //* Product Details
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           SizedBox(
                             width: 480.w,
@@ -87,7 +87,7 @@ class CartProductWidget extends StatelessWidget {
                               _order.name,
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(
-                                fontSize: 16.spMax,
+                                fontSize: 14.spMax,
                                 fontWeight: FontWeight.bold,
                                 color: Theme.of(context).colorScheme.onSecondary,
                               ),
@@ -100,6 +100,7 @@ class CartProductWidget extends StatelessWidget {
                               children: [
                                 Icon(
                                   FontAwesomeIcons.moneyBill,
+                                  size: 16.spMax,
                                   color: Theme.of(context).colorScheme.onSecondary,
                                 ),
                                 SizedBox(width: 10.spMax),
@@ -108,7 +109,6 @@ class CartProductWidget extends StatelessWidget {
                                   style: TextStyle(
                                     overflow: TextOverflow.ellipsis,
                                     fontSize: 14.spMax,
-                                    fontWeight: FontWeight.bold,
                                     color: Theme.of(context).colorScheme.onSecondary,
                                   ),
                                 ),

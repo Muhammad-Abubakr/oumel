@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:oumel/blocs/basket/basket_cubit.dart';
-import 'package:oumel/models/purchase.dart';
+import 'package:oumel/models/cart_order.dart';
 import 'package:oumel/widgets/cart_product_widget.dart';
 
 class BasketScreen extends StatelessWidget {
@@ -11,7 +11,7 @@ class BasketScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final BasketCubit basketCubit = context.watch<BasketCubit>();
-    final Purchase? purchase = basketCubit.state.purchase;
+    final CartOrder? purchase = basketCubit.state.purchase;
     final products = purchase?.products;
 
     return BlocListener<BasketCubit, BasketState>(
@@ -84,7 +84,7 @@ class BasketScreen extends StatelessWidget {
                       Text(
                         "Total Price: ",
                         style: TextStyle(
-                          fontSize: 18.spMax,
+                          fontSize: 16.spMax,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -92,7 +92,7 @@ class BasketScreen extends StatelessWidget {
                         purchase.totalPrice.toStringAsFixed(2),
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          fontSize: 18.spMax,
+                          fontSize: 16.spMax,
                           color: Theme.of(context).colorScheme.primary,
                         ),
                       ),

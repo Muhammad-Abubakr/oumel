@@ -4,9 +4,10 @@ import 'package:bloc/bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:oumel/models/order.dart';
-import 'package:oumel/models/purchase.dart';
+import 'package:oumel/models/cart_order.dart';
 
 import '../../models/product.dart';
+import '../../models/purchase.dart';
 
 part 'basket_state.dart';
 
@@ -61,7 +62,7 @@ class BasketCubit extends Cubit<BasketState> {
     if (state.purchase == null) {
       List<Order> orders = [order];
 
-      Purchase newPurchase = Purchase(
+      CartOrder newPurchase = CartOrder(
         products: orders,
         totalPrice: getTotal(orders),
         customer: _currentUser!.uid,
@@ -98,7 +99,7 @@ class BasketCubit extends Cubit<BasketState> {
 
       double updatedTotal = getTotal(updatedOrders);
 
-      Purchase updatedPurchase = state.purchase!.copyWith(
+      CartOrder updatedPurchase = state.purchase!.copyWith(
         products: updatedOrders,
         totalPrice: updatedTotal,
       );
@@ -118,7 +119,7 @@ class BasketCubit extends Cubit<BasketState> {
         purchase: null,
       ));
     } else {
-      Purchase updatedState = state.purchase!.copyWith(
+      CartOrder updatedState = state.purchase!.copyWith(
         products: [...state.purchase!.products],
         totalPrice: getTotal(state.purchase!.products),
       );
@@ -144,7 +145,7 @@ class BasketCubit extends Cubit<BasketState> {
 
       state.purchase!.products.replaceRange(orderIdx, orderIdx + 1, [updatedOrder]);
 
-      Purchase updatedState = state.purchase!.copyWith(
+      CartOrder updatedState = state.purchase!.copyWith(
         products: [...state.purchase!.products],
         totalPrice: getTotal(state.purchase!.products),
       );
@@ -164,27 +165,28 @@ class BasketCubit extends Cubit<BasketState> {
     try {
       if (state.purchase != null) {
         for (var product in state.purchase!.products) {
+          /* Requests collection for the owner */
           final requestsRef = FirebaseDatabase.instance.ref("requests");
           var ownersRef = requestsRef.child(product.uid);
-          var customerRef = ownersRef.child(_currentUser!.uid);
 
-          final newRequestRef = customerRef.push();
-          await newRequestRef.set({
-            "product": product.toJson(),
-            "time": DateTime.now().millisecondsSinceEpoch,
-            "req_ref": newRequestRef.key,
-          });
+          final newRequestRef = ownersRef.push();
+          Purchase purchase = Purchase(
+            order: product,
+            refId: newRequestRef.key!,
+            custId: _currentUser!.uid,
+            time: DateTime.now(),
+          );
 
+          await newRequestRef.set(purchase.toJson());
+
+          /* Now for the purchases collection for the customer */
           final purchasesRef = FirebaseDatabase.instance.ref("purchases");
-          customerRef = purchasesRef.child(_currentUser!.uid);
-          ownersRef = customerRef.child(product.uid);
+          final customerRef = purchasesRef.child(_currentUser!.uid);
 
-          final newPurchaseRef = ownersRef.push();
-          await newPurchaseRef.set({
-            "product": product.toJson(),
-            "time": DateTime.now().millisecondsSinceEpoch,
-            "pur_ref": newPurchaseRef.key,
-          });
+          final newPurchaseRef = customerRef.push();
+          purchase = purchase.copyWith(refId: newPurchaseRef.key);
+
+          await newPurchaseRef.set(purchase.toJson());
         }
 
         emit(const BasketUpdate(

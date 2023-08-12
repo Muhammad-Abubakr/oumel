@@ -36,7 +36,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     _auth = AuthService();
 
     // =============== Subscribing to Firebase User Stream ================ //
-    _auth.subscribe.listen((element) => add(_UserUpdateEvent(element)));
+    AuthService.subscribe.listen((element) => add(_UserUpdateEvent(element)));
 
     // =============== Hooking Handlers ================ //
     // PRIVATE
@@ -57,9 +57,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
    */
   FutureOr<void> _subscriptionHandler(_UserUpdateEvent event, Emitter<UserState> emit) {
     // updates the Bloc about the change in user state from the firebase subscription
-    if (kDebugMode) {
-      print(event.user);
-    }
+    debugPrint(state.status.toString());
 
     // If the user has signed out
     if (event.user == null) {
@@ -67,6 +65,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
         user: event.user,
         state: UserStates.signedOut,
       ));
+      debugPrint(state.status.toString());
       // if the user is registering and signed in one time but it's updated
       // with other details like profile pic, display name and photoUrl
     } else if (event.user?.uid == state.user?.uid &&
@@ -75,6 +74,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
         user: event.user,
         state: UserStates.initialized,
       ));
+      debugPrint(state.status.toString());
 
       // if user is anonymous and signing in
     } else if (event.user!.isAnonymous) {
@@ -83,12 +83,14 @@ class UserBloc extends Bloc<UserEvent, UserState> {
         state: UserStates.anonLogin,
       ));
 
+      debugPrint(state.status.toString());
       // if user is not anonymous and singing in
     } else {
       emit(UserUpdate(
         user: event.user,
         state: UserStates.signedIn,
       ));
+      debugPrint(state.status.toString());
     }
   }
 

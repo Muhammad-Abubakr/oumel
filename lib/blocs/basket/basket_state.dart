@@ -3,7 +3,7 @@ part of 'basket_cubit.dart';
 enum BasketStatus { processing, error, orderPlaced }
 
 abstract class BasketState {
-  final Purchase? purchase;
+  final CartOrder? purchase;
   final BasketStatus? status;
   final FirebaseException? exception;
 

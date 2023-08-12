@@ -6,45 +6,47 @@ import 'package:equatable/equatable.dart';
 import 'order.dart';
 
 class Purchase extends Equatable {
-  final List<Order> products;
-  final double totalPrice;
-  final String customer;
+  final Order order;
+  final String refId;
+  final String custId;
+  final DateTime time;
 
   const Purchase({
-    required this.products,
-    required this.totalPrice,
-    required this.customer,
+    required this.order,
+    required this.refId,
+    required this.custId,
+    required this.time,
   });
 
   Purchase copyWith({
-    List<Order>? products,
-    double? totalPrice,
-    String? customer,
+    Order? order,
+    String? refId,
+    String? custId,
+    DateTime? time,
   }) {
     return Purchase(
-      products: products ?? this.products,
-      totalPrice: totalPrice ?? this.totalPrice,
-      customer: customer ?? this.customer,
+      order: order ?? this.order,
+      refId: refId ?? this.refId,
+      custId: custId ?? this.custId,
+      time: time ?? this.time,
     );
   }
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
-      'products': products.map((x) => x.toMap()).toList(),
-      'totalPrice': totalPrice,
-      'customer': customer,
+      'order': order.toMap(),
+      'refId': refId,
+      'custId': custId,
+      'time': time.millisecondsSinceEpoch,
     };
   }
 
   factory Purchase.fromMap(Map<String, dynamic> map) {
     return Purchase(
-      products: List<Order>.from(
-        (map['products'] as List<int>).map<Order>(
-          (x) => Order.fromMap(x as Map<String, dynamic>),
-        ),
-      ),
-      totalPrice: map['totalPrice'] as double,
-      customer: map['customer'] as String,
+      order: Order.fromMap(map['order'] as Map<String, dynamic>),
+      refId: map['refId'] as String,
+      custId: map['custId'] as String,
+      time: DateTime.fromMillisecondsSinceEpoch(map['time'] as int),
     );
   }
 
@@ -53,9 +55,18 @@ class Purchase extends Equatable {
   factory Purchase.fromJson(String source) =>
       Purchase.fromMap(json.decode(source) as Map<String, dynamic>);
 
+  String formattedTimeString() {
+    String formattedString;
+
+    formattedString =
+        "Date: ${time.day}/${time.month}/${time.year}\nat ${time.hour}:${time.minute < 10 ? "0${time.minute}" : time.minute}";
+
+    return formattedString;
+  }
+
   @override
   bool get stringify => true;
 
   @override
-  List<Object> get props => [products, totalPrice, customer];
+  List<Object> get props => [order, refId, custId, time];
 }

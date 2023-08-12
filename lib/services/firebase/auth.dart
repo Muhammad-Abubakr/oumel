@@ -2,9 +2,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 /* Service Handler - Handles all calls between FirebaseAuth and Application */
 class AuthService {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  static final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  Stream<User?> get subscribe => _auth.userChanges();
+  static Stream<User?> get subscribe => _auth.userChanges();
+  static Stream<User?> get authStream => _auth.authStateChanges();
 
   /* Sign in Anononymously using signInAnonmously provided by FirebaseAuth.instance
   on successfull sign in return User, otherwise return null; */

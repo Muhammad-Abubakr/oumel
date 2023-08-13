@@ -137,6 +137,11 @@ class RequestsCubit extends Cubit<RequestsState> {
     }
   }
 
+  // getting a specific purchase details
+  Purchase getRequest(String purchaseRef) {
+    return state.requests.firstWhere((element) => element.purRef == purchaseRef);
+  }
+
   // Completed Sales Count
   int getSalesCount() {
     return state.requests

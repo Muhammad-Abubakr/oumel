@@ -211,7 +211,8 @@ class NotificationsCubit extends Cubit<NotificationsState> {
     required NotificationType orderStatus,
   }) async {
     // get a reference for the new notification we are going to push
-    final DatabaseReference newNotification = _orderUpdatesNotificationsRef.push();
+    final DatabaseReference newNotification =
+        _notifications.child("updates").child(custRef).push();
 
     // create an OrderNotification object
     final OrderNotificaiton updateNotification = OrderNotificaiton(

@@ -28,11 +28,15 @@ class ChatMessage extends StatelessWidget {
                   margin: EdgeInsets.symmetric(vertical: 4.spMax),
                   padding: EdgeInsets.all(8.spMax),
                   decoration: BoxDecoration(
-                    boxShadow: kElevationToShadow[3],
+                    border: Border.fromBorderSide(BorderSide(
+                      color: Theme.of(context).colorScheme.primary,
+                      width: 1,
+                      style: BorderStyle.solid,
+                    )),
                     borderRadius: BorderRadius.circular(32.r),
                     color: message.sender == state.user?.uid
                         ? Theme.of(context).primaryColor
-                        : Colors.white,
+                        : Theme.of(context).primaryColor.withOpacity(0.05),
                   ),
                   child: Text(
                     message.content,

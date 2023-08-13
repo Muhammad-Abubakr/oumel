@@ -14,6 +14,9 @@ class Order {
   final OrderStatus status;
   final int quantity;
 
+  String get productId => pid.substring(pid.length - 4);
+  String get ownerId => uid.substring(uid.length - 4);
+
   Order({
     required this.uid,
     required this.pid,

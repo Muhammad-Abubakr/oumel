@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:oumel/blocs/basket/basket_cubit.dart';
+import 'package:oumel/blocs/notifications/notifications_cubit.dart';
 import 'package:oumel/blocs/purchases/purchases_cubit.dart';
 import 'package:oumel/blocs/requests/requests_cubit.dart';
 import 'package:oumel/blocs/userchat/userchat_cubit.dart';
@@ -46,6 +47,7 @@ class _WrapperState extends State<Wrapper> {
     should be done here */
     context.read<SavedProductsCubit>().initialize();
     context.read<UserchatCubit>().intialize();
+    context.read<NotificationsCubit>().initialize();
     context.read<BasketCubit>().initialize();
     context.read<PurchasesCubit>().initialize();
     context.read<RequestsCubit>().initialize();
@@ -61,6 +63,7 @@ class _WrapperState extends State<Wrapper> {
     context.read<BasketCubit>().dispose();
     context.read<PurchasesCubit>().dispose();
     context.read<RequestsCubit>().dispose();
+    context.read<NotificationsCubit>().dispose();
 
     super.deactivate();
   }

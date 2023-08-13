@@ -5,7 +5,7 @@ import 'package:oumel/screens/drawer/chats_page.dart';
 
 import '../../blocs/chat/chat_bloc.dart';
 import '../../blocs/user/user_bloc.dart';
-import '../../models/chat_message.dart';
+import '../../widgets/chat_message.dart';
 import '../../models/message.dart';
 import '../../models/user.dart';
 

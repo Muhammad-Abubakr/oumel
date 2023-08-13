@@ -27,7 +27,7 @@ class PurchasesCubit extends Cubit<PurchasesState> {
         // subscribe to current user's purchases stream
         _purchasesStream = _purchasesRef.child(user.uid).onValue.listen((event) {
           /* Container */
-          final List<Purchase> purchases = List.empty(growable: true);
+          List<Purchase> purchases = List.empty(growable: true);
 
           //  get the data snapshot
           final snapshot = event.snapshot;
@@ -43,6 +43,9 @@ class PurchasesCubit extends Cubit<PurchasesState> {
               purchases.add(purchase);
             }
           }
+          // Sort descending with time
+          purchases.sort((a, b) => a.time.compareTo(b.time));
+          purchases = purchases.reversed.toList();
 
           emit(PurchasesUpdate(purchases));
         });
@@ -85,6 +88,20 @@ class PurchasesCubit extends Cubit<PurchasesState> {
     } on FirebaseException catch (e) {
       debugPrint(e.message);
     }
+  }
+
+  // getting a specific purchase details
+  Purchase getPurchase(String purchaseRef) {
+    return state.purchases.firstWhere((element) => element.purRef == purchaseRef);
+  }
+
+  // Completed Purchases Count
+  int getPurchasesCount() {
+    return state.purchases
+        .where((element) =>
+            element.order.status == OrderStatus.accepted ||
+            element.order.status == OrderStatus.completed)
+        .length;
   }
 
   //  disposer

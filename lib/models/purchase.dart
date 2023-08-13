@@ -12,6 +12,8 @@ class Purchase extends Equatable {
   final String custId;
   final DateTime time;
 
+  String get referenceId => purRef.substring(purRef.length - 4);
+
   const Purchase({
     required this.order,
     required this.reqRef,
@@ -65,7 +67,7 @@ class Purchase extends Equatable {
     String formattedString;
 
     formattedString =
-        "Date: ${time.day}/${time.month}/${time.year}\nat ${time.hour}:${time.minute < 10 ? "0${time.minute}" : time.minute}";
+        "${time.day}/${time.month}/${time.year}\nat ${time.hour}:${time.minute < 10 ? "0${time.minute}" : time.minute}";
 
     return formattedString;
   }

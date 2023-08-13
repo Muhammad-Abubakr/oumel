@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:oumel/blocs/notifications/notifications_cubit.dart';
 import 'package:oumel/models/order.dart';
 import 'package:oumel/models/cart_order.dart';
 
@@ -14,8 +15,9 @@ part 'basket_state.dart';
 class BasketCubit extends Cubit<BasketState> {
   late StreamSubscription _userStream;
   User? _currentUser;
+  final NotificationsCubit _notificationsCubit;
 
-  BasketCubit() : super(const BasketInitial());
+  BasketCubit(this._notificationsCubit) : super(const BasketInitial());
 
   /* Cubit initialization */
   void initialize() {
@@ -184,6 +186,11 @@ class BasketCubit extends Cubit<BasketState> {
 
           await newRequestRef.set(purchase.toJson());
           await newPurchaseRef.set(purchase.toJson());
+
+          _notificationsCubit.notifyPurchaseRequest(
+              ownerRef: product.uid,
+              custRef: _currentUser!.uid,
+              purchaseRef: newPurchaseRef.key!);
         }
 
         emit(const BasketUpdate(

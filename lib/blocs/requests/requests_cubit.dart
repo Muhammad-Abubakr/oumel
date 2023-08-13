@@ -3,7 +3,9 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:oumel/blocs/notifications/notifications_cubit.dart';
 import 'package:oumel/blocs/purchases/purchases_cubit.dart';
+import 'package:oumel/models/notification.dart';
 import 'package:oumel/models/order.dart';
 import 'package:oumel/models/purchase.dart';
 
@@ -18,8 +20,10 @@ class RequestsCubit extends Cubit<RequestsState> {
   late StreamSubscription _currentUsersReqStream;
   late StreamSubscription _currentUserStream;
   final PurchasesCubit _purchasesCubit;
+  final NotificationsCubit _notificationsCubit;
 
-  RequestsCubit(this._purchasesCubit) : super(const RequestsInitial(requests: []));
+  RequestsCubit(this._purchasesCubit, this._notificationsCubit)
+      : super(const RequestsInitial(requests: []));
 
   /* initialize */
   void initialize() {
@@ -30,7 +34,7 @@ class RequestsCubit extends Cubit<RequestsState> {
         /* open stream for requests for the user from the user requests reference */
         _currentUsersReqStream = _currentUsersReqsRef.onValue.listen((event) {
           // Container
-          final List<Purchase> requests = List.empty(growable: true);
+          List<Purchase> requests = List.empty(growable: true);
 
           final DataSnapshot snapshot = event.snapshot;
 
@@ -45,6 +49,9 @@ class RequestsCubit extends Cubit<RequestsState> {
               requests.add(request);
             }
           }
+          // Sort descending with time
+          requests.sort((a, b) => a.time.compareTo(b.time));
+          requests = requests.reversed.toList();
 
           emit(RequestsUpdate(requests: requests));
         });
@@ -84,6 +91,12 @@ class RequestsCubit extends Cubit<RequestsState> {
         await productRef.set(updatedProduct.toJson());
 
         _purchasesCubit.orderAccepted(purchase);
+        _notificationsCubit.notifyPurchaseUpdate(
+          custRef: updatedPurchase.custId,
+          ownerRef: updatedPurchase.order.uid,
+          purchaseRef: updatedPurchase.purRef,
+          orderStatus: NotificationType.orderAccepted,
+        );
         emit(RequestsUpdate(requests: state.requests, status: RequestStatus.accepted));
 
         /* incase of any error */
@@ -110,12 +123,27 @@ class RequestsCubit extends Cubit<RequestsState> {
       await purchaseRef.set(updatedPurchase.toJson());
 
       _purchasesCubit.orderDenied(purchase);
+      _notificationsCubit.notifyPurchaseUpdate(
+        custRef: updatedPurchase.custId,
+        ownerRef: updatedPurchase.order.uid,
+        purchaseRef: updatedPurchase.purRef,
+        orderStatus: NotificationType.orderDenied,
+      );
       emit(RequestsUpdate(requests: state.requests, status: RequestStatus.denied));
       /* Incase of error */
     } on FirebaseException catch (e) {
       emit(RequestsUpdate(
           requests: state.requests, status: RequestStatus.error, error: e.message));
     }
+  }
+
+  // Completed Sales Count
+  int getSalesCount() {
+    return state.requests
+        .where((element) =>
+            element.order.status == OrderStatus.accepted ||
+            element.order.status == OrderStatus.completed)
+        .length;
   }
 
   /* disposition */

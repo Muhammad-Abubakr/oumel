@@ -3,6 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:oumel/blocs/purchases/purchases_cubit.dart';
+import 'package:oumel/blocs/requests/requests_cubit.dart';
 import 'package:oumel/screens/edit_profile_screen.dart';
 
 import '../../blocs/user/user_bloc.dart';
@@ -28,6 +30,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final PurchasesCubit purchasesCubit = context.watch<PurchasesCubit>();
+    final int totalPurchases = purchasesCubit.getPurchasesCount();
+    final RequestsCubit requestsCubit = context.watch<RequestsCubit>();
+    final int totalSales = requestsCubit.getSalesCount();
+
     return user == null
         ? const SizedBox()
         : userBloc.state.user!.isAnonymous
@@ -127,28 +134,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           child: const Text("Edit Profile"),
                         ),
                         /* User Details About Purchases and Sales */
-                        // TODO: Wrap each of following with their respective Bloc and listen for changes
+                        //~ TODONE: Wrap each of following with their respective Bloc and listen for changes
 
                         SizedBox(height: 164.h),
 
                         /* Details */
                         // Purchases
-                        const Row(
+                        Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text('Purchases'),
-                            Text('0'),
+                            const Text('Purchases'),
+                            Text("$totalPurchases"),
                           ],
                         ),
 
                         SizedBox(height: 64.h),
 
                         // Sales
-                        const Row(
+                        Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text('Sales'),
-                            Text('0'),
+                            const Text('Sales'),
+                            Text("$totalSales"),
                           ],
                         ),
                       ],

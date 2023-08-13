@@ -143,15 +143,26 @@ class OrderRequestWidget extends StatelessWidget {
                       ],
                     ),
                   ),
-                  Align(
-                    alignment: Alignment.center,
-                    child: Text(
-                      _purchase.formattedTimeString(),
-                      style: TextStyle(
-                        fontSize: 12.spMax,
-                        color: Theme.of(context).colorScheme.secondary,
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Ref#${_purchase.referenceId}",
+                        style: TextStyle(
+                          fontSize: 14.spMax,
+                          fontWeight: FontWeight.w500,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
                       ),
-                    ),
+                      Text(
+                        _purchase.formattedTimeString(),
+                        style: TextStyle(
+                          fontSize: 12.spMax,
+                          color: Theme.of(context).colorScheme.secondary,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),

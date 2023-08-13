@@ -13,12 +13,16 @@ class NotificationsScreen extends StatelessWidget {
     final NotificationsCubit notificationsCubit = context.watch<NotificationsCubit>();
     final List<notify.Notification> notifications = notificationsCubit.getAllNotifications();
 
-    return ListView.separated(
-      itemBuilder: (context, index) {
-        return NotificationWidget(notification: notifications[index]);
-      },
-      separatorBuilder: (context, index) => const Divider(),
-      itemCount: notifications.length,
-    );
+    return notifications.isEmpty
+        ? const Center(
+            child: Text("You are all caught up 😃"),
+          )
+        : ListView.separated(
+            itemBuilder: (context, index) {
+              return NotificationWidget(notification: notifications[index]);
+            },
+            separatorBuilder: (context, index) => const Divider(),
+            itemCount: notifications.length,
+          );
   }
 }

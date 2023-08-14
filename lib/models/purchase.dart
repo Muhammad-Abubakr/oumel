@@ -67,7 +67,7 @@ class Purchase extends Equatable {
     String formattedString;
 
     formattedString =
-        "${time.day}/${time.month}/${time.year}\nat ${time.hour}:${time.minute < 10 ? "0${time.minute}" : time.minute}";
+        "${time.day}/${time.month}/${time.year}\n${time.hour}:${time.minute < 10 ? "0${time.minute}" : time.minute}";
 
     return formattedString;
   }

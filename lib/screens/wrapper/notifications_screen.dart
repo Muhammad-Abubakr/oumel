@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../blocs/notifications/notifications_cubit.dart';
 import '../../models/notification.dart' as notify;
@@ -18,10 +19,11 @@ class NotificationsScreen extends StatelessWidget {
             child: Text("You are all caught up 😃"),
           )
         : ListView.separated(
+            padding: EdgeInsets.symmetric(horizontal: 10.w),
             itemBuilder: (context, index) {
               return NotificationWidget(notification: notifications[index]);
             },
-            separatorBuilder: (context, index) => const Divider(),
+            separatorBuilder: (context, index) => SizedBox(height: 20.h),
             itemCount: notifications.length,
           );
   }

@@ -202,7 +202,7 @@ class _PostItemScreenState extends State<PostItemScreen> {
                             ),
                             DropdownMenuEntry(
                               label: 'Jewllery',
-                              value: ProductCategory.jewllery,
+                              value: ProductCategory.jewellery,
                             ),
                             DropdownMenuEntry(
                               label: 'Clothing',

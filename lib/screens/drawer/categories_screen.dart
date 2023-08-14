@@ -16,7 +16,7 @@ class CategoriesScreen extends StatelessWidget {
     final Map<ProductCategory, IconData> iconMap = {
       ProductCategory.free: FontAwesomeIcons.gift,
       ProductCategory.furniture: FontAwesomeIcons.chair,
-      ProductCategory.jewllery: FontAwesomeIcons.diamond,
+      ProductCategory.jewellery: FontAwesomeIcons.diamond,
       ProductCategory.clothing: FontAwesomeIcons.shirt,
       ProductCategory.vehicles: FontAwesomeIcons.car,
       ProductCategory.electronics: FontAwesomeIcons.mobile,

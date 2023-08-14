@@ -85,9 +85,8 @@ class _ChatsPageState extends State<ChatsPage> {
               ? const Center(
                   child: CircularProgressIndicator(),
                 )
-              : ListView.separated(
+              : ListView.builder(
                   padding: EdgeInsets.symmetric(vertical: 4.spMax),
-                  separatorBuilder: (context, index) => const Divider(),
                   itemBuilder: (context, index) {
                     User otherUser = others[index];
                     Message lastMessage = lastMessages[index];

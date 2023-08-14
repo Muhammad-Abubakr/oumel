@@ -8,7 +8,7 @@ enum ProductCategory {
   none,
   free,
   furniture,
-  jewllery,
+  jewellery,
   clothing,
   vehicles,
   electronics,

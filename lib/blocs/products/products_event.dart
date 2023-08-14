@@ -40,6 +40,11 @@ class Initialize extends ProductsEvent {
   Initialize();
 }
 
+/* Dispose the opened streams */
+class Dispose extends ProductsEvent {
+  Dispose();
+}
+
 /* Private Events */
 class _Update extends ProductsEvent {
   final List<Product> products;

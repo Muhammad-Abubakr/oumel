@@ -52,32 +52,8 @@ class NotificationWidget extends StatelessWidget {
       }
     }
 
-    return
-        // Dismissible(
-        //   key: Key(notification.ref),
-        //   direction: DismissDirection.startToEnd,
-        //   onDismissed: (_) => showDialog(
-        //     context: context,
-        //     builder: (_) => AlertDialog(
-        //         title: const Text("Confirmation"),
-        //         content: const Text("This notification will be removed forever. Are you Sure?"),
-        //         actions: [
-        //           TextButton(onPressed: () {}, child: const Text("Cancel")),
-        //           ElevatedButton(onPressed: () {}, child: const Text("Yes")),
-        //         ]),
-        //   ),
-        //   background: Padding(
-        //     padding: EdgeInsets.only(left: 64.w),
-        //     child: Align(
-        //       alignment: Alignment.centerLeft,
-        //       child: Icon(
-        //         Icons.delete_forever_rounded,
-        //         color: Theme.of(context).colorScheme.primary,
-        //       ),
-        //     ),
-        //   ),
-        //   child:
-        Card(
+    return Card(
+      color: Colors.white,
       elevation: 2,
       shadowColor: Theme.of(context).primaryColor,
       child: ListTile(
@@ -110,7 +86,33 @@ class NotificationWidget extends StatelessWidget {
           style: TextStyle(color: Theme.of(context).colorScheme.primary.withAlpha(100)),
         ),
       ),
-      // ),
     );
   }
 }
+
+/* Dismissible(
+  key: Key(notification.ref),
+  direction: DismissDirection.startToEnd,
+  onDismissed: (_) => showDialog(
+    context: context,
+    builder: (_) => AlertDialog(
+        title: const Text("Confirmation"),
+        content: const Text("This notification will be removed forever. Are you Sure?"),
+        actions: [
+          TextButton(onPressed: () {}, child: const Text("Cancel")),
+          ElevatedButton(onPressed: () {}, child: const Text("Yes")),
+        ]),
+  ),
+  background: Padding(
+    padding: EdgeInsets.only(left: 64.w),
+    child: Align(
+      alignment: Alignment.centerLeft,
+      child: Icon(
+        Icons.delete_forever_rounded,
+        color: Theme.of(context).colorScheme.primary,
+      ),
+    ),
+  ),
+  child:
+),
+ */

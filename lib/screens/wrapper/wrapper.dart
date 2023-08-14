@@ -12,6 +12,7 @@ import 'package:oumel/screens/wrapper/notifications_screen.dart';
 import 'package:oumel/screens/wrapper/profile_screen.dart';
 import 'package:oumel/screens/wrapper/sell_screen.dart';
 
+import '../../blocs/products/products_bloc.dart';
 import '../../blocs/saved/saved_products_cubit.dart';
 import '../../blocs/user/user_bloc.dart';
 import '../../blocs/userbase/userbase_cubit.dart';
@@ -51,6 +52,7 @@ class _WrapperState extends State<Wrapper> {
     context.read<BasketCubit>().initialize();
     context.read<PurchasesCubit>().initialize();
     context.read<RequestsCubit>().initialize();
+    context.read<ProductsBloc>().add(Initialize());
 
     super.initState();
   }
@@ -64,6 +66,7 @@ class _WrapperState extends State<Wrapper> {
     context.read<PurchasesCubit>().dispose();
     context.read<RequestsCubit>().dispose();
     context.read<NotificationsCubit>().dispose();
+    context.read<ProductsBloc>().add(Dispose());
 
     super.deactivate();
   }

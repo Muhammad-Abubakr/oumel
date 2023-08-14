@@ -18,6 +18,7 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
   final DatabaseReference _productsRef = FirebaseDatabase.instance.ref('products');
   final Reference _imagesRef = FirebaseStorage.instance.ref('images');
   final Reference _videosRef = FirebaseStorage.instance.ref('videos');
+  late StreamSubscription _userProductsStream;
 
   /* getting the current user instance */
   final _currentUser = FirebaseAuth.instance.currentUser;
@@ -29,6 +30,7 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
     /* Events */
     on<PostProduct>(_handlePostProduct);
     on<Initialize>(_initializer);
+    on<Dispose>(_disposer);
 
     /* Private Events */
     on<_Update>(_updator);
@@ -164,7 +166,7 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
       final userProductsRef = _productsRef.child(_currentUser!.uid);
 
       // Subscribe to the changes under this reference
-      userProductsRef.onValue.listen((event) {
+      _userProductsStream = userProductsRef.onValue.listen((event) {
         // snapshot data container
         List<Product> products = List.empty(growable: true);
 
@@ -198,7 +200,12 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
     }
   }
 
-  /* get a single product based on pid from warehouse */
+  /* Dispose of resources occupied */
+  FutureOr<void> _disposer(Dispose event, Emitter<ProductsState> emit) async {
+    await _userProductsStream.cancel();
+  }
+
+  /* get a single product based on pid from user products */
   Product getProduct(String pid) {
     return state.products.firstWhere((element) => element.pid == pid);
   }

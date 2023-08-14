@@ -16,7 +16,7 @@ class OrderRequestsScreen extends StatefulWidget {
 }
 
 class _OrderRequestsScreenState extends State<OrderRequestsScreen> {
-  OrderStatus filterBy = OrderStatus.pending;
+  OrderStatus filterBy = OrderStatus.none;
 
   @override
   Widget build(BuildContext context) {
@@ -121,8 +121,12 @@ class _OrderRequestsScreenState extends State<OrderRequestsScreen> {
         //* Builder
         builder: (context, state) {
           /* Filter the Items based on the present filter */
-          List<Purchase> filterdItems =
-              state.requests.where((p) => p.order.status == filterBy).toList();
+          List<Purchase> filterdItems = List.empty(growable: true);
+          if (filterBy != OrderStatus.none) {
+            filterdItems = state.requests.where((p) => p.order.status == filterBy).toList();
+          } else {
+            filterdItems = state.requests;
+          }
 
           return state.requests.isEmpty
               ? const Center(

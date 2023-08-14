@@ -17,7 +17,7 @@ class PurchaseHistoryScreen extends StatefulWidget {
 }
 
 class _PurchaseHistoryScreenState extends State<PurchaseHistoryScreen> {
-  OrderStatus filterBy = OrderStatus.pending;
+  OrderStatus filterBy = OrderStatus.none;
 
   @override
   Widget build(BuildContext context) {
@@ -52,8 +52,12 @@ class _PurchaseHistoryScreenState extends State<PurchaseHistoryScreen> {
       body: BlocBuilder<PurchasesCubit, PurchasesState>(
         builder: (context, state) {
           /* Filter the Items based on the present filter */
-          List<Purchase> filterdItems =
-              state.purchases.where((p) => p.order.status == filterBy).toList();
+          List<Purchase> filterdItems = List.empty(growable: true);
+          if (filterBy != OrderStatus.none) {
+            filterdItems = state.purchases.where((p) => p.order.status == filterBy).toList();
+          } else {
+            filterdItems = state.purchases;
+          }
 
           return state.purchases.isEmpty
               ? const Center(

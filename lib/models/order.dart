@@ -3,7 +3,7 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 
-enum OrderStatus { completed, pending, denied, cancelled, accepted }
+enum OrderStatus { none, completed, pending, denied, cancelled, accepted }
 
 class Order {
   /* Attributes */
